@@ -1,0 +1,312 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.animate-slide-up {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: slideUp 0.15s ease-in forwards;
+}
+
+body {
+  position: relative;
+  color: white;
+  height: 100vh;
+  background: #1e1e1e;
+  font-family: sans-serif;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button:not(.disabled) {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+  opacity: 0.9;
+  user-select: 'none';
+}
+
+button:not(.disabled):hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.clickable {
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+  opacity: 0.9;
+  user-select: 'none';
+}
+
+.clickable:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.clickable-subtle {
+  transition: all ease-in 0.1s !important;
+  cursor: pointer !important;
+  opacity: 0.9 !important;
+}
+
+.clickable-subtle:hover {
+  opacity: 1 !important;
+}
+
+.clickable-subtle-disabled {
+  transition: all ease-in 0.1s !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.clickable-subtle-disabled:hover {
+  opacity: 0.6 !important;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  height: fit-content;
+  width: fit-content;
+  margin: 10px;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.Hello {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+input::-webkit-input-placeholder {
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.4);
+}
+input::-moz-placeholder {
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.4);
+}
+input:-ms-input-placeholder {
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.4);
+}
+input:-moz-placeholder {
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.terminal > div {
+  width: calc(100% - 10px);
+  height: calc(100% - 20px);
+}
+
+.terminal div {
+  box-sizing: border-box;
+}
+
+.terminal div div div span {
+  font-size: 12.8px;
+  line-height: 14px;
+}
+
+.terminal div div div span > span {
+  height: 14px !important;
+}
+
+.field-list {
+  width: 100%;
+}
+
+.field-list ul {
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 750px;
+  border-radius: 6px;
+}
+
+.field-list-x > ul {
+  width: calc(100% - 20px) !important;
+}
+
+.field-list ul:first-child {
+  margin-top: 0;
+}
+
+.field-list ul:last-child {
+  margin-bottom: 0;
+}
+
+.field-list ul li {
+  padding: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-bottom: 18px;
+  width: 100%;
+
+  border-radius: 6px;
+  background-color: rgba(128, 151, 173, 0.35);
+  border: 1px solid rgba(128, 151, 173, 0);
+}
+
+.field-list ul li:last-child {
+  margin-bottom: 0px;
+}
+
+.field-list ul li .list-item {
+  width: 100%;
+  height: 100%;
+  padding: 15px 20px 15px 10px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 1);
+  color: #2e3f50;
+  overflow: hidden;
+}
+
+.field-list ul li .list-item.list-item-group {
+  border-radius: 6px 6px 0px 0px;
+  border-top: 4px solid #ff7a59;
+}
+
+.field-list .list-item.no-children {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.field-list ul li:first-child .list-item,
+.field-list ul li .list-item.no-children:first-child {
+  margin-top: 0;
+}
+
+.field-list ul li:last-child .list-item,
+.field-list ul li .list-item.no-children:last-child {
+  margin-bottom: 0;
+}
+
+.field-list ul li.between-add {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+}
+
+body.react-confirm-alert-body-element {
+  display: initial;
+  justify-content: initial;
+  align-items: initial;
+  margin: initial;
+}
+
+#react-confirm-alert {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+}
+.react-confirm-alert-overlay {
+  background: rgba(46, 63, 80, 0.8);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+}
+.react-confirm-alert-body {
+  color: rgba(46, 63, 80, 1);
+}
+.react-confirm-alert-button-group > button {
+  background: rgba(46, 63, 80, 1);
+}
+
+.color-hover {
+  background-color: #efefef !important;
+  color: #2e3f50 !important;
+}
+
+.color-hover:hover {
+  background-color: #0090ae !important;
+  color: #ffffff !important;
+}
+
+.color-hover-selected,
+.color-hover-selected:hover {
+  background-color: transparent !important;
+  color: #2e3f50 !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body::-webkit-scrollbar,
+.scrollable::-webkit-scrollbar,
+.scrollable-dark::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+body::-webkit-scrollbar-track,
+.scrollable::-webkit-scrollbar-track,
+.scrollable-dark::-webkit-scrollbar-track {
+  box-shadow: 0 0 0 transparent;
+}
+
+body::-webkit-scrollbar-thumb,
+.scrollable::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  outline: 0px;
+  background-color: #4f6378;
+}
+
+.scrollable-dark::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  outline: 0px;
+  background-color: #4e4e4e;
+}
