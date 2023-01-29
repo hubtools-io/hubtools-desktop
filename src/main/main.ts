@@ -19,7 +19,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 // ---------------------------------------------
-const server = 'http://hubtools-deploy-lcwhfwlwx-hubtools-io.vercel.app';
+const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
 const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
 autoUpdater.setFeedURL(feed);
