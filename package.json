@@ -1,6 +1,6 @@
 {
   "name": "hubtools",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "title": "HubTools Desktop",
   "private": false,
   "description": "A desktop app to help with HubSpot development",
