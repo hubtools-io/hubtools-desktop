@@ -67,6 +67,11 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
         data.name !== 'undefined' &&
         data.path !== dir?.path
       ) {
+        if (data.path !== dir?.path) {
+          setFile(undefined);
+          setUnsavedFile(undefined);
+        }
+
         setDir(data);
       }
     });
@@ -116,16 +121,14 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
       window.electron.openFile({ file: `${frameFile.path}` });
 
       window.electron.getOpenFile((data: any) => {
-        if (data) {
-          const newFile = {
-            ...frameFile,
-            id: `${frameFile.path}`,
-            contents: data,
-          };
+        const newFile = {
+          ...frameFile,
+          id: `${frameFile.path}`,
+          contents: data || [],
+        };
 
-          setFile(newFile);
-          setUnsavedFile(newFile);
-        }
+        setFile(newFile);
+        setUnsavedFile(newFile);
       });
     }, 10);
   }, []);

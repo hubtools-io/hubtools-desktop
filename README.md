@@ -1,12 +1,30 @@
-### Get Started
+# HubTools - Open Source
 
-```
-npm install
-npm start
-```
+## The Product
 
-<img width="1548" alt="image" src="https://user-images.githubusercontent.com/1898764/215120975-ca348861-5c1a-4f59-ae68-f73c81dcda4b.png">
+This is a development tool used for creating themes for the HubSpot CMS Platform. The development is currently in Alpha stage as we finish core features. This repository is to develop the product with the HubSpot community, and continue to improve the overall HubSpot developer experience.
 
-<img width="1545" alt="image" src="https://user-images.githubusercontent.com/1898764/215121040-6c2c614b-35a4-4f58-821a-ba7b0783047e.png">
+## Core Features
 
-<img width="1543" alt="image" src="https://user-images.githubusercontent.com/1898764/215121090-999104a9-8e0f-4b27-8ea1-40e0e0959ee3.png">
+Our initial focus is on fields creation and management for themes. This list is expected to expand as features are completed.
+
+- Code editor with completion suggestions specific to HubSpot.
+- Visual field editor for Theme and Modules.
+- Built-in terminal (coming soon).
+
+## Contributing
+
+There are many ways in which you can participate in this project, for example:
+
+- Submit bugs or issues you have encountered.
+- Submit a pull request to contribute to the codebase.
+- Request a new feature.
+
+## Getting Started
+
+To run this project locally, follow these steps:
+
+- Clone github repository: `git clone git@github.com:hubtools-io/hubtools-desktop.git`
+- Change directory to project: `cd hubtools-desktop`
+- Install dependencies: `npm install`
+- Start application: `npm start`
