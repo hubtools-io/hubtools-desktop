@@ -5,13 +5,11 @@ import CloseIcon from 'mdi-react/CloseIcon';
 import CodeTagsIcon from 'mdi-react/CodeTagsIcon';
 import ContentSaveOutlineIcon from 'mdi-react/ContentSaveOutlineIcon';
 import FormatListBulletedSquareIcon from 'mdi-react/FormatListBulletedSquareIcon';
-import ImageFilterCenterFocusIcon from 'mdi-react/ImageFilterCenterFocusIcon';
-import PlusIcon from 'mdi-react/PlusIcon';
-import MinusIcon from 'mdi-react/MinusIcon';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { FrameFile } from 'renderer/components/FrameContext/FrameContext.types';
 import { FrameContext } from 'renderer/components/FrameContext';
 import { confirmAlert } from 'react-confirm-alert';
+import { appVersion } from 'renderer/utils';
 import { Button } from '../components/Button';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Navbar } from '../components/Navbar';
@@ -194,7 +192,7 @@ export const Dashboard = () => {
 
   return (
     <Layout>
-      <Navbar title="HubTools">
+      <Navbar title="HubTools" version={appVersion}>
         <Button onClick={() => handleOpenDirectory()}>
           Open HubSpot CMS Theme
         </Button>

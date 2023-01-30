@@ -2,9 +2,15 @@ import type { FC, HTMLProps } from 'react';
 
 export type NavbarProps = HTMLProps<HTMLDivElement> & {
   title: string;
+  version?: string;
 };
 
-export const Navbar: FC<NavbarProps> = ({ children, title, ...props }) => (
+export const Navbar: FC<NavbarProps> = ({
+  children,
+  title,
+  version,
+  ...props
+}) => (
   <div
     {...props}
     style={{
@@ -23,9 +29,24 @@ export const Navbar: FC<NavbarProps> = ({ children, title, ...props }) => (
       padding: '0 15px',
     }}
   >
-    <span style={{ fontWeight: 'bold', fontSize: 18, userSelect: 'none' }}>
-      {title}
-    </span>
+    <div>
+      <span style={{ fontWeight: 'bold', fontSize: 18, userSelect: 'none' }}>
+        {title}
+      </span>
+      {version ? (
+        <span
+          style={{
+            display: 'inline-block',
+            marginLeft: 6,
+            fontSize: 12,
+            userSelect: 'none',
+            opacity: 0.6,
+          }}
+        >
+          {version}
+        </span>
+      ) : null}
+    </div>
 
     {children}
   </div>
