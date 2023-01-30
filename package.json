@@ -1,6 +1,6 @@
 {
   "name": "hubtools",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "title": "HubTools Desktop",
   "private": false,
   "description": "A desktop app to help with HubSpot development",
@@ -203,8 +203,8 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "HubToolsDesktop",
-    "appId": "org.erb.HubToolsDesktop",
+    "productName": "HubTools",
+    "appId": "org.erb.HubTools",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [

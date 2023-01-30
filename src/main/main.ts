@@ -22,35 +22,6 @@ import { resolveHtmlPath } from './util';
 const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
 const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
-autoUpdater.setFeedURL(feed);
-
-setInterval(() => {
-  autoUpdater.checkForUpdates();
-}, 60000);
-
-autoUpdater.on('update-downloaded', (event: UpdateDownloadedEvent) => {
-  console.log(event);
-
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Not Now. On next Restart'],
-    title: 'Update',
-    message: 'Update',
-    // message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail:
-      'A New Version has been Downloaded. Restart Now to Complete the Update.',
-  };
-
-  return dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall();
-  });
-});
-
-autoUpdater.on('error', (message) => {
-  console.error('There was a problem updating the application');
-  console.error(message);
-});
-
 let openDir = null as any;
 let newGlob = null as any;
 
@@ -254,7 +225,39 @@ const createWindow = async () => {
       mainWindow.webContents.setZoomFactor(1.0 / (factor / 2));
       mainWindow.show();
 
-      autoUpdater.checkForUpdatesAndNotify();
+      autoUpdater.setFeedURL(feed);
+
+      setInterval(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 1000 * 60 * 15);
+
+      autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
+        const dialogOpts = {
+          type: 'info',
+          buttons: ['Restart', 'Not Now. On next Restart'],
+          title: 'Update',
+          message:
+            process.platform === 'win32'
+              ? (info.releaseNotes as string)
+              : (info.releaseName as string),
+          detail:
+            'A New Version has been Downloaded. Restart Now to Complete the Update.',
+        };
+
+        return dialog.showMessageBox(dialogOpts).then((returnValue) => {
+          if (returnValue.response === 0) autoUpdater.quitAndInstall();
+        });
+      });
+
+      autoUpdater.on('error', (message) => {
+        console.error('There was a problem updating the application');
+        console.error(message);
+      });
+
+      setTimeout(() => {
+        console.log('fdas');
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 1000);
     }
   });
 
