@@ -273,20 +273,7 @@ export const Dashboard = () => {
 
       <Layout.ControlBar>
         <ControlBar>
-          <ControlSection>
-            <PlusIcon
-              size={14}
-              style={{ marginLeft: 6, marginRight: 6, cursor: 'pointer' }}
-            />
-            <MinusIcon
-              size={14}
-              style={{ marginLeft: 6, marginRight: 6, cursor: 'pointer' }}
-            />
-            <ImageFilterCenterFocusIcon
-              size={14}
-              style={{ marginLeft: 6, marginRight: 6, cursor: 'pointer' }}
-            />
-          </ControlSection>
+          <ControlSection />
 
           <ControlSection flexAlign="center" />
 

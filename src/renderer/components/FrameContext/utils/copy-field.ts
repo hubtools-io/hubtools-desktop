@@ -15,6 +15,7 @@ export const copyField = (inputArr: any, field: any) => {
       matchFound = true;
       newCopyArr.splice(i + 1, 0, {
         ...item,
+        name: `${item.name}_copy`,
         internalId,
       });
       return;
@@ -28,6 +29,7 @@ export const copyField = (inputArr: any, field: any) => {
           matchFound = true;
           newCopyArr[i].children.splice(i2 + 1, 0, {
             ...item2,
+            name: `${item2.name}_copy`,
             internalId: internalId2,
           });
           return;
@@ -41,6 +43,7 @@ export const copyField = (inputArr: any, field: any) => {
               matchFound = true;
               newCopyArr[i].children[i2].children.splice(i3 + 1, 0, {
                 ...item3,
+                name: `${item3.name}_copy`,
                 internalId: internalId3,
               });
               return;
@@ -57,6 +60,7 @@ export const copyField = (inputArr: any, field: any) => {
                     0,
                     {
                       ...item4,
+                      name: `${item4.name}_copy`,
                       internalId: internalId4,
                     }
                   );
@@ -73,6 +77,7 @@ export const copyField = (inputArr: any, field: any) => {
                         i4
                       ].children.splice(i5 + 1, 0, {
                         ...item5,
+                        name: `${item5.name}_copy`,
                         internalId: internalId5,
                       });
                     }

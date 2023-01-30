@@ -1,5 +1,4 @@
-import CloseIcon from 'mdi-react/CloseIcon';
-import type { FC, HTMLProps } from 'react';
+import { cloneElement, FC, HTMLProps } from 'react';
 import { typeIconLookup } from '../FieldList/TypeIcon';
 
 export type ModalItemProps = HTMLProps<HTMLDivElement> & {
@@ -47,9 +46,7 @@ export const ModalItem: FC<ModalItemProps> = ({
         canSelect ? () => onAddField?.(options.default, false) : undefined
       }
       title={
-        canSelect
-          ? ''
-          : `Field: ${options.label} cannot be added to content tab.`
+        canSelect ? '' : `Field: ${options.label} must be added to STYLE tab.`
       }
     >
       <div
@@ -72,9 +69,16 @@ export const ModalItem: FC<ModalItemProps> = ({
             borderRadius: 5,
           }}
         >
-          {Object.entries(typeIconLookup).map(([fieldType, element]: any) => {
-            return type === fieldType ? element : null;
-          })}
+          {Object.entries(typeIconLookup).map(
+            ([fieldType, element]: any, index: number) => {
+              return fieldType === type
+                ? cloneElement(element, {
+                    key: index,
+                    ...element.props,
+                  })
+                : null;
+            }
+          )}
         </div>
         <div
           style={{
@@ -90,7 +94,7 @@ export const ModalItem: FC<ModalItemProps> = ({
             <span
               style={{ fontSize: 12, display: 'inline-block', marginTop: 2 }}
             >
-              Field cannot be added to content tab.
+              Field must be added to STYLE tab.
             </span>
           ) : null}
         </div>

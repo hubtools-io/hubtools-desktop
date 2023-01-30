@@ -180,6 +180,10 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
                   fontSize: 15,
                   letterSpacing: 1,
                   userSelect: 'none',
+                  width: '100%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 {directory.name}

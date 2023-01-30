@@ -17,6 +17,8 @@ import chokidar from 'chokidar';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
 const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
 const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
@@ -91,6 +93,7 @@ ipcMain.on('reload-directory', (event: any, args: any) => {
 
 const interval = 100;
 const time = new Date().getTime();
+let cwatcher = null as any;
 
 ipcMain.on('open-directory', (event: any, args: any) => {
   dialog
@@ -98,12 +101,16 @@ ipcMain.on('open-directory', (event: any, args: any) => {
       properties: ['openDirectory'],
     })
     .then((result) => {
+      if (cwatcher) {
+        cwatcher.close();
+      }
+
       if (result.canceled || result.filePaths.length === 0) {
         event.sender.send('get-open-directory', false);
       } else {
         openDir = result.filePaths[0];
 
-        const cwatcher = chokidar
+        cwatcher = chokidar
           .watch(openDir, {
             persistent: true,
           })

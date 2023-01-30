@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { cloneElement, FC } from 'react';
 import ArrowDownBoldIcon from 'mdi-react/ArrowDownBoldIcon';
 import ArrowUpBoldOutlineIcon from 'mdi-react/ArrowUpBoldOutlineIcon';
 import ArrowUpBoldIcon from 'mdi-react/ArrowUpBoldIcon';
@@ -175,9 +175,16 @@ export const Item: FC<ItemProps> = ({
               borderRadius: 5,
             }}
           >
-            {Object.entries(typeIconLookup).map(([type, element]: any) => {
-              return node.type === type ? element : null;
-            })}
+            {Object.entries(typeIconLookup).map(
+              ([type, element]: any, index: number) => {
+                return node.type === type
+                  ? cloneElement(element, {
+                      key: index,
+                      ...element.props,
+                    })
+                  : null;
+              }
+            )}
           </div>
           <div
             style={{
