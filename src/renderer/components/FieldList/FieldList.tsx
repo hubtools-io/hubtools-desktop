@@ -2,7 +2,6 @@ import { FC, HTMLProps, useEffect, useState } from 'react';
 import shortid from 'shortid';
 import PlusIcon from 'mdi-react/PlusIcon';
 import { cloneDeep } from 'lodash';
-// import { node } from 'webpack';
 import { FrameFile } from '../FrameContext/FrameContext.types';
 import { addFieldInternalId, formatFieldArray } from '../FrameContext/utils';
 import { Item } from './Item';

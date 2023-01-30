@@ -68,7 +68,7 @@ export const typeIconLookup = {
   font: <FormatSizeIcon size={typeIconSize} />,
   form: <FormSelectIcon size={typeIconSize} />,
 
-  // embed ...
+  // ...
   gradient: <GradientHorizontalIcon size={typeIconSize} />,
   group: <GroupIcon size={typeIconSize} />,
   groupstyletab: <GroupIcon size={typeIconSize} />,

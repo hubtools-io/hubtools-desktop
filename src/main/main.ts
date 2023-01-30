@@ -10,7 +10,6 @@
  */
 import { app, BrowserWindow, shell, dialog, ipcMain, screen } from 'electron';
 import { autoUpdater, UpdateDownloadedEvent } from 'electron-updater';
-import log from 'electron-log';
 import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
@@ -18,7 +17,6 @@ import chokidar from 'chokidar';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-// ---------------------------------------------
 const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
 const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
@@ -33,14 +31,6 @@ const getDirectories = (src: any) => {
   return newGlob;
 };
 
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
-
 let mainWindow: BrowserWindow | null = null;
 
 const getDirectoryContents = async (event: any, reloadDir: any) => {
@@ -49,7 +39,7 @@ const getDirectoryContents = async (event: any, reloadDir: any) => {
   if (newGlob !== null) {
     const newFileList = [] as any;
 
-    // -------------------------------
+    // --------------------------------------------------------------
     // Create Tree
     const resTree = [] as any;
     const level = { resTree };
@@ -73,7 +63,7 @@ const getDirectoryContents = async (event: any, reloadDir: any) => {
         return r[name];
       }, level);
     });
-    // -------------------------------
+    // --------------------------------------------------------------
 
     await newGlob.forEach((file: any, index: number) => {
       const isDirectory = fs.lstatSync(file).isFile() === false;
@@ -204,7 +194,6 @@ const createWindow = async () => {
     height: 500 * factor,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      // zoomFactor: 1.0 * factor,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged
@@ -230,34 +219,6 @@ const createWindow = async () => {
       setInterval(() => {
         autoUpdater.checkForUpdatesAndNotify();
       }, 1000 * 60 * 15);
-
-      autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
-        const dialogOpts = {
-          type: 'info',
-          buttons: ['Restart', 'Not Now. On next Restart'],
-          title: 'Update',
-          message:
-            process.platform === 'win32'
-              ? (info.releaseNotes as string)
-              : (info.releaseName as string),
-          detail:
-            'A New Version has been Downloaded. Restart Now to Complete the Update.',
-        };
-
-        return dialog.showMessageBox(dialogOpts).then((returnValue) => {
-          if (returnValue.response === 0) autoUpdater.quitAndInstall();
-        });
-      });
-
-      autoUpdater.on('error', (message) => {
-        console.error('There was a problem updating the application');
-        console.error(message);
-      });
-
-      setTimeout(() => {
-        console.log('fdas');
-        autoUpdater.checkForUpdatesAndNotify();
-      }, 1000);
     }
   });
 
@@ -273,44 +234,34 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
 };
 
-// const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000;
-// setInterval(() => {
-//   autoUpdater.checkForUpdates();
-// }, UPDATE_CHECK_INTERVAL);
-//
-// autoUpdater.on('update-available', async () => {
-//   console.log('update is available...');
-//   const response = await dialog.showMessageBox(mainWindow!, {
-//     type: 'info',
-//     title: 'Found Updates',
-//     message: 'Found updates, do you want update now?',
-//     buttons: ['Sure', 'Later'],
-//   });
+autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart', 'Not Now. On next Restart'],
+    title: 'Update',
+    message:
+      process.platform === 'win32'
+        ? (info.releaseNotes as string)
+        : (info.releaseName as string),
+    detail:
+      'A New Version has been Downloaded. Restart Now to Complete the Update.',
+  };
 
-//   if (response.response === 0) {
-//     console.log('Downloading Update');
-//     autoUpdater.downloadUpdate();
-//     await dialog.showMessageBox(mainWindow!, {
-//       type: 'info',
-//       title: 'Update Downloading',
-//       message:
-//         'Update is being downloaded, you will be notified when it is ready to install',
-//       buttons: [],
-//     });
-//   }
-// });
+  return dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) {
+      setImmediate(() => {
+        autoUpdater.quitAndInstall();
+      });
+    }
+  });
+});
 
-// autoUpdater.setFeedURL(url);
-
-/**
- * Add event listeners...
- */
+autoUpdater.on('error', (message) => {
+  console.error('There was a problem updating the application');
+  console.error(message);
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

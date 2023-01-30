@@ -3,7 +3,6 @@ import AppleKeyboardCommandIcon from 'mdi-react/AppleKeyboardCommandIcon';
 import ChevronUpIcon from 'mdi-react/ChevronUpIcon';
 import CloseIcon from 'mdi-react/CloseIcon';
 import CodeTagsIcon from 'mdi-react/CodeTagsIcon';
-import CogOutlineIcon from 'mdi-react/CogOutlineIcon';
 import ContentSaveOutlineIcon from 'mdi-react/ContentSaveOutlineIcon';
 import FormatListBulletedSquareIcon from 'mdi-react/FormatListBulletedSquareIcon';
 import ImageFilterCenterFocusIcon from 'mdi-react/ImageFilterCenterFocusIcon';
@@ -365,18 +364,6 @@ export const Dashboard = () => {
             <ContentSaveOutlineIcon size={ViewButtonIconSize} />
           </ViewButton>
         </ViewButtonGroup>
-
-        <ViewButtonGroup>
-          <ViewButton
-            title="Settings"
-            onClick={() => handleViewChange('DOWN')}
-            roundedBottom
-            roundedTop
-            disabled={!unsavedFrameFile}
-          >
-            <CogOutlineIcon size={ViewButtonIconSize} />
-          </ViewButton>
-        </ViewButtonGroup>
       </Layout.ViewBar>
 
       <Layout.Frame>
@@ -445,7 +432,7 @@ export const Dashboard = () => {
               </g>
             </svg>
 
-            <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 10, display: 'none' }}>
               <div
                 style={{
                   display: 'flex',
