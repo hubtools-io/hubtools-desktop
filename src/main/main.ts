@@ -253,6 +253,8 @@ const createWindow = async () => {
     } else {
       mainWindow.webContents.setZoomFactor(1.0 / (factor / 2));
       mainWindow.show();
+
+      autoUpdater.checkForUpdatesAndNotify();
     }
   });
 
@@ -323,8 +325,6 @@ app
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
-
-      autoUpdater.checkForUpdatesAndNotify();
     });
   })
   .catch(console.log);
