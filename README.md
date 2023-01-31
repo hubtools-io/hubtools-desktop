@@ -14,14 +14,6 @@ Our initial focus is on fields creation and management for themes. This list is 
 - Visual field editor for Theme and Modules.
 - Built-in terminal (coming soon).
 
-## Contributing
-
-There are many ways in which you can participate in this project, for example:
-
-- Submit bugs or issues you have encountered.
-- Submit a pull request to contribute to the codebase.
-- Request a new feature.
-
 ## Getting Started
 
 To run this project locally, follow these steps:
@@ -52,3 +44,10 @@ Click to add a field to be presented with a modal. Within the modal, you can cho
 <img width="1518" alt="image" src="https://user-images.githubusercontent.com/1898764/215790175-bdcc3b19-b836-4585-be3e-4a8c8a634d3c.png">
 
 
+## Contributing
+
+There are many ways in which you can participate in this project, for example:
+
+- Submit bugs or issues you have encountered.
+- Submit a pull request to contribute to the codebase.
+- Request a new feature.
