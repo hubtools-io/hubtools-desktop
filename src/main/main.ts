@@ -28,9 +28,6 @@ class AppUpdater {
   }
 }
 
-// const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
-// const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
-
 let openDir = null as any;
 let newGlob = null as any;
 
@@ -212,41 +209,6 @@ const createWindow = async () => {
     } else {
       mainWindow.webContents.setZoomFactor(1.0 / (factor / 2));
       mainWindow.show();
-
-      // autoUpdater.setFeedURL(feed);
-
-      // autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
-      //   const dialogOpts = {
-      //     type: 'info',
-      //     buttons: ['Restart', 'Later'],
-      //     title: 'Update',
-      //     message:
-      //       process.platform === 'win32'
-      //         ? (info.releaseNotes as string)
-      //         : (info.releaseName as string),
-      //     detail:
-      //       'A New Version has been Downloaded. Restart Now to Complete the Update.',
-      //   };
-
-      //   return dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      //     if (returnValue.response === 0) {
-      //       setImmediate(() => {
-      //         autoUpdater.quitAndInstall();
-      //       });
-      //     }
-      //   });
-      // });
-
-      // autoUpdater.on('error', (message) => {
-      //   console.error('There was a problem updating the application');
-      //   console.error(message);
-      // });
-
-      // autoUpdater.checkForUpdatesAndNotify();
-
-      // setInterval(() => {
-      //   autoUpdater.checkForUpdatesAndNotify();
-      // }, 1000 * 60 * 15);
     }
   });
 
@@ -267,8 +229,6 @@ const createWindow = async () => {
 };
 
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -279,8 +239,6 @@ app
   .then(() => {
     createWindow();
     app.on('activate', () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
     });
   })
