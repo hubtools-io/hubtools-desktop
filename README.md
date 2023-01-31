@@ -46,8 +46,8 @@ Click to add a field to be presented with a modal. Within the modal, you can cho
 
 ## Contributors
 
-<a href="https://github.com/markiearnold" target="_blank"><img style="width:64px;" src="https://avatars.githubusercontent.com/u/1898764?v=4"></a>
-<a href="https://github.com/evendrop" target="_blank"><img style="width:64px;" src="https://avatars.githubusercontent.com/u/5991649?v=4"></a>
+<a href="https://github.com/markiearnold" target="_blank"><img style="border-radius: 10000px;margin-right: 10px;width:64px;" src="https://avatars.githubusercontent.com/u/1898764?v=4"></a>
+<a href="https://github.com/evendrop" target="_blank"><img style="border-radius: 10000px;margin-right: 10px;width:64px;" src="https://avatars.githubusercontent.com/u/5991649?v=4"></a>
 
 
 ## Contributing
