@@ -33,7 +33,7 @@ To run this project locally, follow these steps:
 
 ## Features Overview
 
-### Code Editor Completion Suggestions
+### 01. Code Editor Completion Suggestions
 
 Start typing a field type, and the HubTools Code Editor will provide suggestions.  Selecting a suggestion will add a default field of that type to the code.
 
@@ -41,8 +41,9 @@ Start typing a field type, and the HubTools Code Editor will provide suggestions
 
 <img width="1516" alt="image" src="https://user-images.githubusercontent.com/1898764/215789497-b8c6c715-b1cb-40ea-9db4-f501862a29fd.png">
 
+<br/><br/>
 
-### Visual Field Editor
+### 02. Visual Field Editor
 
 Click to add a field to be presented with a modal. Within the modal, you can choose which HubSpot field type to add.
 
