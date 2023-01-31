@@ -223,8 +223,36 @@ const createWindow = async () => {
 
       autoUpdater.setFeedURL(feed);
 
+      autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
+        const dialogOpts = {
+          type: 'info',
+          buttons: ['Restart', 'Not Now. On next Restart'],
+          title: 'Update',
+          message:
+            process.platform === 'win32'
+              ? (info.releaseNotes as string)
+              : (info.releaseName as string),
+          detail:
+            'A New Version has been Downloaded. Restart Now to Complete the Update.',
+        };
+
+        return dialog.showMessageBox(dialogOpts).then((returnValue) => {
+          if (returnValue.response === 0) {
+            setImmediate(() => {
+              autoUpdater.quitAndInstall();
+            });
+          }
+        });
+      });
+
+      autoUpdater.on('error', (message) => {
+        console.error('There was a problem updating the application');
+        console.error(message);
+      });
+
+      autoUpdater.checkForUpdates();
       setInterval(() => {
-        autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdates();
       }, 1000 * 60 * 15);
     }
   });
@@ -242,33 +270,6 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 };
-
-autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Not Now. On next Restart'],
-    title: 'Update',
-    message:
-      process.platform === 'win32'
-        ? (info.releaseNotes as string)
-        : (info.releaseName as string),
-    detail:
-      'A New Version has been Downloaded. Restart Now to Complete the Update.',
-  };
-
-  return dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) {
-      setImmediate(() => {
-        autoUpdater.quitAndInstall();
-      });
-    }
-  });
-});
-
-autoUpdater.on('error', (message) => {
-  console.error('There was a problem updating the application');
-  console.error(message);
-});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
