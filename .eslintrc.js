@@ -17,6 +17,7 @@ module.exports = {
     'default-param-last': 'off',
     'no-param-reassign': 'off',
     'no-nested-ternary': 'off',
+    'no-new': 'off',
     // 'import/no-cycle': 'off',
     // 'import/no-named-as-default': 'off',
     // 'import/no-named-as-default-member': 'off',

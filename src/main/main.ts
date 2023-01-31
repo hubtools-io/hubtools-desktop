@@ -9,18 +9,27 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app, BrowserWindow, shell, dialog, ipcMain, screen } from 'electron';
-import { autoUpdater, UpdateDownloadedEvent } from 'electron-updater';
+import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 import chokidar from 'chokidar';
+import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
-const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
-const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
+class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
+
+// const server = 'https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app';
+// const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
 let openDir = null as any;
 let newGlob = null as any;
@@ -204,40 +213,40 @@ const createWindow = async () => {
       mainWindow.webContents.setZoomFactor(1.0 / (factor / 2));
       mainWindow.show();
 
-      autoUpdater.setFeedURL(feed);
+      // autoUpdater.setFeedURL(feed);
 
-      autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
-        const dialogOpts = {
-          type: 'info',
-          buttons: ['Restart', 'Later'],
-          title: 'Update',
-          message:
-            process.platform === 'win32'
-              ? (info.releaseNotes as string)
-              : (info.releaseName as string),
-          detail:
-            'A New Version has been Downloaded. Restart Now to Complete the Update.',
-        };
+      // autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
+      //   const dialogOpts = {
+      //     type: 'info',
+      //     buttons: ['Restart', 'Later'],
+      //     title: 'Update',
+      //     message:
+      //       process.platform === 'win32'
+      //         ? (info.releaseNotes as string)
+      //         : (info.releaseName as string),
+      //     detail:
+      //       'A New Version has been Downloaded. Restart Now to Complete the Update.',
+      //   };
 
-        return dialog.showMessageBox(dialogOpts).then((returnValue) => {
-          if (returnValue.response === 0) {
-            setImmediate(() => {
-              autoUpdater.quitAndInstall();
-            });
-          }
-        });
-      });
+      //   return dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      //     if (returnValue.response === 0) {
+      //       setImmediate(() => {
+      //         autoUpdater.quitAndInstall();
+      //       });
+      //     }
+      //   });
+      // });
 
-      autoUpdater.on('error', (message) => {
-        console.error('There was a problem updating the application');
-        console.error(message);
-      });
+      // autoUpdater.on('error', (message) => {
+      //   console.error('There was a problem updating the application');
+      //   console.error(message);
+      // });
 
-      autoUpdater.checkForUpdatesAndNotify();
+      // autoUpdater.checkForUpdatesAndNotify();
 
-      setInterval(() => {
-        autoUpdater.checkForUpdatesAndNotify();
-      }, 1000 * 60 * 15);
+      // setInterval(() => {
+      //   autoUpdater.checkForUpdatesAndNotify();
+      // }, 1000 * 60 * 15);
     }
   });
 
@@ -253,6 +262,8 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
+
+  new AppUpdater();
 };
 
 app.on('window-all-closed', () => {
