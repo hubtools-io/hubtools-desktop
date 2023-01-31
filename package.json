@@ -1,6 +1,6 @@
 {
   "name": "hubtools-desktop",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "title": "HubTools Desktop",
   "private": false,
   "description": "A desktop app to help with HubSpot development",
@@ -260,10 +260,17 @@
     "extraResources": [
       "./assets/**"
     ],
-    "publish": {
-      "provider": "generic",
-      "url": "https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app"
-    }
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://hubtools-deploy-bu3x2ekdl-hubtools-io.vercel.app"
+      },
+      {
+        "provider": "github",
+        "owner": "hubtools-io",
+        "repo": "hubtools-desktop"
+      }
+    ]
   },
   "collective": {
     "url": "https://opencollective.com/hubtools-desktop-594"
