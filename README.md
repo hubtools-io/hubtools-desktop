@@ -52,5 +52,3 @@ Click to add a field to be presented with a modal. Within the modal, you can cho
 <img width="1518" alt="image" src="https://user-images.githubusercontent.com/1898764/215790175-bdcc3b19-b836-4585-be3e-4a8c8a634d3c.png">
 
 
-
-- Start application: `npm start`
