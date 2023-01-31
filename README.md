@@ -1,8 +1,10 @@
 # HubTools - Open Source
 
-## The Product
+## The Project
 
 This is a development tool used for creating themes for the HubSpot CMS Platform. The project is currently in Alpha stage as we finish core features. This repository is to develop the product with the HubSpot community, and continue to improve the overall HubSpot developer experience.
+
+* This project is developed by HubSpot developers, and is not associated with HubSpot.
 
 ## Core Features
 
