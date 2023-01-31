@@ -1,7 +1,8 @@
 # HubTools - Open Source
 
 <a href="https://www.youtube.com/watch?v=9dZ1fzAW24M" target="_blank">
-![image](https://user-images.githubusercontent.com/1898764/215821457-05b4473b-265c-473d-8016-a22d7a930625.png)
+![image](https://user-images.githubusercontent.com/1898764/215821757-e42a9f24-6376-488d-8979-6f1f7d48ae9c.png)
+
 </a>
 
 <br/><br/>
