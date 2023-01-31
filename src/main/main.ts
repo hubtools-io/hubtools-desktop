@@ -226,7 +226,7 @@ const createWindow = async () => {
       autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
         const dialogOpts = {
           type: 'info',
-          buttons: ['Restart', 'Not Now. On next Restart'],
+          buttons: ['Restart', 'Later'],
           title: 'Update',
           message:
             process.platform === 'win32'
