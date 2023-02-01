@@ -25,30 +25,32 @@ class AppUpdater {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
+
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 1000 * 60 * 15);
   }
 }
 
 let openDir = null as any;
 let newGlob = null as any;
-
+let cwatcher = null as any;
 let isReady = false;
+let mainWindow: BrowserWindow | null = null;
 
 const getDirectories = (src: any) => {
   newGlob = null;
-  newGlob = glob.sync(`${src}/**/*`, {});
+  newGlob = glob.sync(`${src}/**/*`, {
+    ignore: ['**/node_modules/**', '**/dist/**', '**/.git/**'],
+  });
   return newGlob;
 };
-
-let mainWindow: BrowserWindow | null = null;
 
 const getDirectoryContents = async (event: any, reloadDir: any) => {
   await getDirectories(reloadDir);
 
   if (newGlob !== null) {
     const newFileList = [] as any;
-
-    // --------------------------------------------------------------
-    // Create Tree
     const resTree = [] as any;
     const level = { resTree };
 
@@ -61,17 +63,18 @@ const getDirectoryContents = async (event: any, reloadDir: any) => {
       newPath.split('/').reduce((r: any, name: any, i: any, a: any) => {
         if (!r[name]) {
           r[name] = { resTree: [] };
+
           r.resTree.push({
             name,
             path: pathx,
             children: r[name].resTree,
+            isDirectory: fs.lstatSync(pathx).isDirectory(),
           });
         }
 
         return r[name];
       }, level);
     });
-    // --------------------------------------------------------------
 
     await newGlob.forEach((file: any, index: number) => {
       const isDirectory = fs.lstatSync(file).isFile() === false;
@@ -96,10 +99,6 @@ const getDirectoryContents = async (event: any, reloadDir: any) => {
 ipcMain.on('reload-directory', (event: any, args: any) => {
   getDirectoryContents(event, args.directory);
 });
-
-const interval = 100;
-const time = new Date().getTime();
-let cwatcher = null as any;
 
 ipcMain.on('open-directory', (event: any, args: any) => {
   dialog
@@ -169,11 +168,14 @@ if (process.env.NODE_ENV === 'production') {
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-// if (isDebug) {
-//   require('electron-debug')();
-// }
+if (isDebug) {
+  require('electron-debug')();
+}
 
 const createWindow = async () => {
+  app.commandLine.appendSwitch('high-dpi-support', '1');
+  app.commandLine.appendSwitch('force-device-scale-factor', '1');
+
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
@@ -182,7 +184,7 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  const factor = screen.getPrimaryDisplay().scaleFactor;
+  let factor = screen.getPrimaryDisplay().scaleFactor;
 
   mainWindow = new BrowserWindow({
     show: false,
@@ -207,7 +209,7 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
-      mainWindow.webContents.setZoomFactor(1.0 / (factor / 2));
+      mainWindow?.webContents.setZoomFactor(1.0 / (factor / 2));
       mainWindow.show();
     }
   });
@@ -223,6 +225,18 @@ const createWindow = async () => {
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
+  });
+
+  mainWindow.on('move', () => {
+    const winBounds = mainWindow?.getBounds();
+    const activeScreen = screen.getDisplayNearestPoint({
+      x: winBounds ? winBounds.x : 0,
+      y: winBounds ? winBounds.y : 0,
+    });
+
+    factor = activeScreen.scaleFactor;
+    mainWindow?.setSize(760 * factor, 500 * factor, true);
+    mainWindow?.webContents.setZoomFactor(1.0 / (factor / 2));
   });
 
   new AppUpdater();

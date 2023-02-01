@@ -59,6 +59,7 @@ export const Dashboard = () => {
   const [currentView, setCurrentView] = useState<View>('CODE');
   const [editorEdited, setEditorEdited] = useState<boolean>(false);
   const [editorValid, setEditorValid] = useState<boolean>(true);
+  const [hideFiles, setHideFiles] = useState<boolean>(false);
 
   useEffect(() => {
     setDirectoryLoading?.(false);
@@ -190,6 +191,10 @@ export const Dashboard = () => {
     setEditorValid(validState);
   };
 
+  const handleHideFiles = () => {
+    setHideFiles(!hideFiles);
+  };
+
   return (
     <Layout>
       <Navbar title="HubTools" version={appVersion}>
@@ -291,7 +296,7 @@ export const Dashboard = () => {
       </Layout.ControlBar>
 
       <Layout.Explorer>
-        <Explorer>
+        <Explorer onHide={handleHideFiles} canHide={false} hide={hideFiles}>
           <ExplorerFiles
             directory={directory}
             directoryLoading={directoryLoading}
