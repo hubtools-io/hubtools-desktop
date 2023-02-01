@@ -8,15 +8,25 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, shell, dialog, ipcMain, screen } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  dialog,
+  ipcMain,
+  Rectangle,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 import chokidar from 'chokidar';
 import log from 'electron-log';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+const store = new Store();
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
@@ -184,12 +194,10 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  let factor = screen.getPrimaryDisplay().scaleFactor;
-
   mainWindow = new BrowserWindow({
     show: false,
-    width: 760 * factor,
-    height: 500 * factor,
+    width: 1200,
+    height: 900,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
@@ -209,9 +217,14 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
-      mainWindow?.webContents.setZoomFactor(1.0 / (factor / 2));
+      mainWindow.setBounds(store.get('bounds') as Partial<Rectangle>);
+      mainWindow.webContents.setZoomFactor(1.0);
       mainWindow.show();
     }
+  });
+
+  mainWindow.on('close', () => {
+    store.set('bounds', mainWindow?.getBounds());
   });
 
   mainWindow.on('closed', () => {
@@ -228,15 +241,7 @@ const createWindow = async () => {
   });
 
   mainWindow.on('move', () => {
-    const winBounds = mainWindow?.getBounds();
-    const activeScreen = screen.getDisplayNearestPoint({
-      x: winBounds ? winBounds.x : 0,
-      y: winBounds ? winBounds.y : 0,
-    });
-
-    factor = activeScreen.scaleFactor;
-    mainWindow?.setSize(760 * factor, 500 * factor, true);
-    mainWindow?.webContents.setZoomFactor(1.0 / (factor / 2));
+    mainWindow?.webContents.setZoomFactor(1.0);
   });
 
   new AppUpdater();
