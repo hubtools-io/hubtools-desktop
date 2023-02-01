@@ -1,13 +1,4 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
-
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
 import {
   app,
   BrowserWindow,
@@ -28,6 +19,12 @@ import { resolveHtmlPath } from './util';
 
 const store = new Store();
 
+let directoryGlob = null as any;
+let directoryWatcher = null as any;
+let directoryWatcherIsReady = false;
+let mainWindow: BrowserWindow | null = null;
+let selectedDirectory = null as any;
+
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 class AppUpdater {
@@ -36,49 +33,78 @@ class AppUpdater {
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
 
+    autoUpdater.on('checking-for-update', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'Checking for app updates...',
+      });
+    });
+
+    autoUpdater.on('update-available', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'New app update found.',
+      });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'New app update has been downloaded.',
+      });
+    });
+
     setInterval(() => {
       autoUpdater.checkForUpdatesAndNotify();
     }, 1000 * 60 * 15);
   }
 }
 
-let openDir = null as any;
-let newGlob = null as any;
-let cwatcher = null as any;
-let isReady = false;
-let mainWindow: BrowserWindow | null = null;
-
-const getDirectories = (src: any) => {
-  newGlob = null;
-  newGlob = glob.sync(`${src}/**/*`, {
+const getDirectoryGlob = (src: any) => {
+  directoryGlob = null;
+  directoryGlob = glob.sync(`${src}/**/*`, {
     ignore: ['**/node_modules/**', '**/dist/**', '**/.git/**'],
   });
-  return newGlob;
+  return directoryGlob;
 };
 
-const getDirectoryContents = async (event: any, reloadDir: any) => {
-  await getDirectories(reloadDir);
+const getDirectoryContents = async (event: any, directoryPath: any) => {
+  await getDirectoryGlob(directoryPath);
 
-  if (newGlob !== null) {
-    const newFileList = [] as any;
-    const resTree = [] as any;
-    const level = { resTree };
+  if (directoryGlob !== null) {
+    const directoryContents = [] as any;
+    const directoryTree = [] as any;
+    const level = { directoryTree };
 
-    await newGlob.forEach((pathx: any, index: number) => {
-      const newPath = pathx.replaceAll(`${reloadDir}/`, '');
-      if (newPath === '') {
+    await directoryGlob.forEach((pathx: any, index: number) => {
+      const relativePath = pathx.replaceAll(`${directoryPath}/`, '');
+      if (relativePath === '') {
         return;
       }
 
-      newPath.split('/').reduce((r: any, name: any, i: any, a: any) => {
-        if (!r[name]) {
-          r[name] = { resTree: [] };
+      event.sender.send('receive-msg', {
+        text: 'Building directory file tree...',
+      });
 
-          r.resTree.push({
+      const isDirectory = fs.lstatSync(pathx).isFile() === false;
+
+      relativePath.split('/').reduce((r: any, name: any, i: any, a: any) => {
+        if (!r[name]) {
+          r[name] = { directoryTree: [] };
+
+          directoryContents.push({
+            path: pathx,
+            directory: path.dirname(pathx),
+            name: path.basename(pathx),
+            expanded: false,
+            isDirectory,
+            extension: path.basename(pathx).split('.').pop(),
+          });
+
+          r.directoryTree.push({
             name,
             path: pathx,
-            children: r[name].resTree,
-            isDirectory: fs.lstatSync(pathx).isDirectory(),
+            children: r[name].directoryTree,
           });
         }
 
@@ -86,22 +112,15 @@ const getDirectoryContents = async (event: any, reloadDir: any) => {
       }, level);
     });
 
-    await newGlob.forEach((file: any, index: number) => {
-      const isDirectory = fs.lstatSync(file).isFile() === false;
-
-      newFileList.push({
-        path: file,
-        directory: path.dirname(file),
-        name: path.basename(file),
-        isDirectory,
-      });
+    event.sender.send('receive-msg', {
+      text: '',
     });
 
     event.sender.send('get-open-directory', {
-      name: path.basename(reloadDir),
-      path: reloadDir,
-      contents: newFileList,
-      tree: resTree,
+      name: path.basename(directoryPath),
+      path: directoryPath,
+      contents: directoryContents,
+      tree: directoryTree,
     });
   }
 };
@@ -111,40 +130,48 @@ ipcMain.on('reload-directory', (event: any, args: any) => {
 });
 
 ipcMain.on('open-directory', (event: any, args: any) => {
+  event.sender.send('receive-msg', {
+    text: 'Select a directory from the dialog',
+  });
+
   dialog
     .showOpenDialog({
       properties: ['openDirectory'],
     })
     .then((result) => {
-      if (cwatcher) {
-        cwatcher.close();
+      if (directoryWatcher) {
+        directoryWatcher.close();
       }
 
       if (result.canceled || result.filePaths.length === 0) {
         event.sender.send('get-open-directory', false);
       } else {
-        openDir = result.filePaths[0];
+        event.sender.send('receive-msg', {
+          text: 'Directory opening...',
+        });
 
-        cwatcher = chokidar
-          .watch(openDir, {
+        selectedDirectory = result.filePaths[0];
+
+        directoryWatcher = chokidar
+          .watch(selectedDirectory, {
             persistent: true,
           })
           .on('ready', () => {
-            isReady = true;
-            getDirectoryContents(event, openDir);
+            directoryWatcherIsReady = true;
+            getDirectoryContents(event, selectedDirectory);
           })
           .on('change', (cpath: any) => {
-            if (isReady) {
+            if (directoryWatcherIsReady) {
               event.sender.send('watch-directory', {
-                directory: openDir,
+                directory: selectedDirectory,
                 file: cpath,
                 eventType: 'change',
               });
             }
           })
           .on('unlink', (cpath: any) => {
-            if (isReady) {
-              getDirectoryContents(event, openDir);
+            if (directoryWatcherIsReady) {
+              getDirectoryContents(event, selectedDirectory);
             }
           });
       }
@@ -155,13 +182,25 @@ ipcMain.on('open-directory', (event: any, args: any) => {
 });
 
 ipcMain.on('open-file', (event: any, args: any) => {
+  event.sender.send('receive-msg', {
+    text: 'Opening File...',
+  });
+
   fs.readFile(args.file, 'utf8', (err, data) => {
     if (err) throw err;
+    event.sender.send('receive-msg', {
+      text: '',
+    });
+
     return event.sender.send('get-open-file', data);
   });
 });
 
 ipcMain.on('save-file', (event: any, args: any) => {
+  event.sender.send('receive-msg', {
+    text: 'Saving file...',
+  });
+
   fs.writeFile(args.savePath, args.contents, (err) => {
     if (err) console.log(err);
     else {

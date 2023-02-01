@@ -13,6 +13,8 @@ import { FrameFile, NewFrameFile, Directory } from './FrameContext.types';
 import { formatFieldString } from './utils';
 
 export interface FrameContextState {
+  message?: any;
+
   directory?: Directory;
   openDirectory: () => void;
   closeDirectory: () => void;
@@ -58,6 +60,21 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
   const [file, setFile] = useState<FrameFile>();
   const [dirChanged, setDirChanged] = useState<any>();
   const [unsavedFile, setUnsavedFile] = useState<NewFrameFile | FrameFile>();
+  const [message, setMessage] = useState<string>('');
+
+  useEffect(() => {
+    window.electron.receiveMsg((data: any) => {
+      if (data) {
+        setMessage(data.text);
+      }
+
+      if (data.autoDismiss) {
+        setTimeout(() => {
+          setMessage('');
+        }, 5000);
+      }
+    });
+  }, [dir]);
 
   useEffect(() => {
     window.electron.getOpenDirectory((data: any) => {
@@ -70,9 +87,10 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
         if (data.path !== dir?.path) {
           setFile(undefined);
           setUnsavedFile(undefined);
+          setDir(data);
+        } else {
+          setDir({ ...data });
         }
-
-        setDir(data);
       }
     });
   }, [dir]);
@@ -162,24 +180,21 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
     [setUnsavedFile]
   );
 
-  const saveFrameFile = useCallback(
-    (frameFile: NewFrameFile | FrameFile) => {
-      const formattedContents = formatFieldString(frameFile.contents);
+  const saveFrameFile = useCallback((frameFile: NewFrameFile | FrameFile) => {
+    const formattedContents = formatFieldString(frameFile.contents);
 
-      window.electron.saveFile({
-        savePath: `${frameFile.path}`,
-        contents: frameFile.contents ? formattedContents : '',
-      });
+    window.electron.saveFile({
+      savePath: `${frameFile.path}`,
+      contents: frameFile.contents ? formattedContents : '',
+    });
 
-      window.electron.getSavedFile((data: any) => {
-        if (data === 200) {
-          setFile(frameFile);
-          setUnsavedFile(frameFile);
-        }
-      });
-    },
-    [setFile, setUnsavedFile]
-  );
+    window.electron.getSavedFile((data: any) => {
+      if (data === 200) {
+        setFile(frameFile);
+        setUnsavedFile(frameFile);
+      }
+    });
+  }, []);
 
   const revertFrameFile = useCallback(() => {
     setUnsavedFile(file);
@@ -187,6 +202,8 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
 
   const ctx: FrameContextState = useMemo(
     () => ({
+      message,
+
       directory: dir,
       openDirectory,
       closeDirectory,
@@ -205,6 +222,8 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
       revertFrameFile,
     }),
     [
+      message,
+
       dir,
       openDirectory,
       closeDirectory,

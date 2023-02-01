@@ -23,6 +23,10 @@ const electronHandler = {
     ipcRenderer.on('get-saved-file', (event, data) => {
       callback(data);
     }),
+  receiveMsg: (callback: any) =>
+    ipcRenderer.on('receive-msg', (event, data) => {
+      callback(data);
+    }),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

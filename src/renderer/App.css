@@ -27,6 +27,25 @@
   }
 }
 
+@keyframes bump {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  75% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 .animate-slide-up {
   opacity: 0;
   transform: translateY(50px);
@@ -210,6 +229,7 @@ input:-moz-placeholder {
   background-color: rgba(255, 255, 255, 1);
   color: #2e3f50;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .field-list ul li .list-item.list-item-group {
@@ -238,6 +258,14 @@ input:-moz-placeholder {
   justify-content: center;
   align-items: center;
   padding: 4px 0;
+}
+
+.field-list ul li.between-add-condensed {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
 }
 
 body.react-confirm-alert-body-element {
@@ -309,4 +337,21 @@ body::-webkit-scrollbar-thumb,
   border-radius: 3px;
   outline: 0px;
   background-color: #4e4e4e;
+}
+
+.react-confirm-alert-body {
+  width: 500px !important;
+}
+
+.react-confirm-alert-button-group > button {
+  font-size: 16px !important;
+}
+
+.react-confirm-alert-body > h1 {
+  font-size: 26px !important;
+}
+
+.scrolling-to-node,
+.scrolling-to-node > div {
+  background: #ff7a59 !important;
 }

@@ -4,14 +4,16 @@ import FileIcon from 'mdi-react/FileIcon';
 import FileCancelOutlineIcon from 'mdi-react/FileCancelOutlineIcon';
 import FolderIcon from 'mdi-react/FolderIcon';
 import LoadingIcon from 'mdi-react/LoadingIcon';
-import { FC, HTMLProps } from 'react';
+import { FC, HTMLProps, useEffect, useState } from 'react';
 import { hubspotFieldFile } from 'renderer/Dashboard/utils';
+import ChevronRightIcon from 'mdi-react/ChevronRightIcon';
 import { Directory } from '../FrameContext/FrameContext.types';
 
 export type ExplorerFilesProps = HTMLProps<HTMLDivElement> & {
   directory?: Directory;
   directoryLoading?: boolean;
   onFileSelect: (file: any) => void;
+  onOpenProject: () => void;
   selectedFile?: any;
   selectedFileEdited?: boolean;
   selectedFileValid?: boolean;
@@ -20,6 +22,7 @@ export type ExplorerFilesProps = HTMLProps<HTMLDivElement> & {
 export const ExplorerFiles: FC<ExplorerFilesProps> = ({
   directory,
   directoryLoading,
+  onOpenProject,
   onFileSelect,
   selectedFile,
   selectedFileEdited = false,
@@ -29,6 +32,30 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
   const handleFakeEvent = () => {};
 
   const clickableFiles = [hubspotFieldFile];
+  const [tree, setTree] = useState<any>();
+  const [expanded, setExpanded] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (directory && directory.tree) {
+      setTree(directory.tree);
+    }
+  }, [directory]);
+
+  const handleFileClick = (sourceItem: any) => {
+    if (sourceItem.isDirectory) {
+      setExpanded((prevValue: any) => {
+        const alreadyExpanded = prevValue.includes(sourceItem.path);
+
+        const newValue = alreadyExpanded
+          ? prevValue.filter((v: any) => v !== sourceItem.path)
+          : [...prevValue, sourceItem.path];
+
+        return newValue;
+      });
+    } else if (clickableFiles.includes(sourceItem.name)) {
+      return onFileSelect(sourceItem);
+    }
+  };
 
   const displayDirectory = (item: any, index: number) => {
     if (!directory) {
@@ -60,7 +87,7 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
           <div
             role="button"
             className={
-              clickableFiles.includes(sourceItem.name)
+              clickableFiles.includes(sourceItem.name) || sourceItem.isDirectory
                 ? 'clickable-subtle'
                 : 'clickable-subtle-disabled'
             }
@@ -81,16 +108,14 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
                 selectedFile?.path === sourceItem.path
                   ? 'rgba(79, 100, 121, 0.5)'
                   : 'transparent',
-              opacity: clickableFiles.includes(sourceItem.name) ? '1' : '0.6',
-              cursor: clickableFiles.includes(sourceItem.name)
-                ? 'pointer'
-                : 'not-allowed',
+              opacity:
+                clickableFiles.includes(sourceItem.name) ||
+                sourceItem.isDirectory
+                  ? '1'
+                  : '0.6',
+              cursor: 'pointer',
             }}
-            onClick={
-              clickableFiles.includes(sourceItem.name)
-                ? () => onFileSelect(sourceItem)
-                : undefined
-            }
+            onClick={() => handleFileClick(sourceItem)}
             onKeyDown={handleFakeEvent}
           >
             <div
@@ -103,8 +128,16 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
             >
               {sourceItem.isDirectory ? (
                 <>
-                  <FolderIcon size={14} style={{ marginRight: 6 }} />
-                  <span>{sourceItem.name}</span>
+                  {expanded.includes(sourceItem.path) ? (
+                    <ChevronDownIcon size={14} style={{ marginRight: 6 }} />
+                  ) : (
+                    <ChevronRightIcon size={14} style={{ marginRight: 6 }} />
+                  )}
+                  <FolderIcon
+                    size={14}
+                    style={{ marginRight: 6, flexShrink: 0, flexGrow: 0 }}
+                  />
+                  <span style={{ userSelect: 'none' }}>{sourceItem.name}</span>
                 </>
               ) : (
                 <>
@@ -136,9 +169,13 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
             ) : null}
           </div>
 
-          {item.children.map((child: any, indx: number) =>
-            displayDirectory(child, indx)
-          )}
+          {expanded.includes(sourceItem.path) ? (
+            <>
+              {item.children.map((child: any, indx: number) =>
+                displayDirectory(child, indx)
+              )}
+            </>
+          ) : null}
         </li>
       </ul>
     );
@@ -190,7 +227,7 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
               </span>
             </div>
 
-            {directory?.tree.map((item: any, index: number) =>
+            {tree.map((item: any, index: number) =>
               displayDirectory(item, index)
             )}
           </li>
@@ -212,12 +249,16 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
             </span>
           ) : (
             <span
+              className="clickable"
               style={{
                 color: 'rgba(255, 255, 255, 0.5)',
                 fontSize: 13,
                 letterSpacing: 0.5,
                 userSelect: 'none',
               }}
+              role="button"
+              onClick={onOpenProject}
+              onKeyDown={() => {}}
             >
               Open a project.
             </span>

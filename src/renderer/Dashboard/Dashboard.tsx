@@ -38,6 +38,8 @@ const unsavedConfirmMessage = {
 
 export const Dashboard = () => {
   const {
+    message,
+
     directory,
     openDirectory,
     closeDirectory,
@@ -122,11 +124,11 @@ export const Dashboard = () => {
       ...unsavedConfirmMessage,
       buttons: [
         {
-          label: 'Yes',
+          label: 'Yes, discard unsaved changes.',
           onClick: () => onConfirmOpenFile(file),
         },
         {
-          label: 'No',
+          label: 'No, keep working.',
           onClick: () => {},
         },
       ],
@@ -152,11 +154,11 @@ export const Dashboard = () => {
       ...unsavedConfirmMessage,
       buttons: [
         {
-          label: 'Yes',
+          label: 'Yes, discard unsaved changes',
           onClick: () => onConfirmCloseFile(),
         },
         {
-          label: 'No',
+          label: 'No, keep working',
           onClick: () => {},
         },
       ],
@@ -276,7 +278,17 @@ export const Dashboard = () => {
 
       <Layout.ControlBar>
         <ControlBar>
-          <ControlSection />
+          <ControlSection>
+            <span
+              style={{
+                display: 'inline-block',
+                paddingLeft: 10,
+                color: 'rgba(255,255,255,0.7',
+              }}
+            >
+              {message}
+            </span>
+          </ControlSection>
 
           <ControlSection flexAlign="center" />
 
@@ -300,6 +312,7 @@ export const Dashboard = () => {
           <ExplorerFiles
             directory={directory}
             directoryLoading={directoryLoading}
+            onOpenProject={() => handleOpenDirectory()}
             onFileSelect={handleOpenFile}
             selectedFile={unsavedFrameFile}
             selectedFileEdited={edited}

@@ -29,7 +29,6 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState,
     formState: { isValidating, errors },
@@ -56,10 +55,10 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
     <div
       {...props}
       style={{
-        width: 400,
-        maxWidth: 400,
-        minWidth: 400,
-        flexBasis: 400,
+        width: 340,
+        maxWidth: 340,
+        minWidth: 340,
+        flexBasis: 340,
         flexShrink: 0,
         flexGrow: 1,
         backgroundColor: '#1E1E1E',
@@ -109,7 +108,7 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
       <div>
         {editingField ? (
           <div
-            className="scrollable"
+            className="scrollable-dark"
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -122,7 +121,7 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
               fontSize: 13,
               letterSpacing: 0.5,
               userSelect: 'none',
-              padding: 40,
+              padding: '20px 20px',
             }}
           >
             <div

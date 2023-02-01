@@ -6,6 +6,8 @@ import ContentCopyIcon from 'mdi-react/ContentCopyIcon';
 import DeleteOutlineIcon from 'mdi-react/DeleteOutlineIcon';
 import PencilIcon from 'mdi-react/PencilIcon';
 import PlusIcon from 'mdi-react/PlusIcon';
+import ChevronDownIcon from 'mdi-react/ChevronDownIcon';
+import ChevronLeftIcon from 'mdi-react/ChevronLeftIcon';
 import { Kind } from './Kind';
 import { Label } from './Label';
 import { Name } from './Name';
@@ -23,6 +25,9 @@ export type ItemProps = {
   onRemoveField?: (field: Field) => void;
   onUpdateField?: (field: Field, nextField: Field) => void;
   onEditField?: (field: Field) => void;
+  onCollapse?: (field: Field) => void;
+  canCollapse?: boolean;
+  collapsed?: boolean;
   selectedEditField?: Field;
   moveLevels?: boolean;
 };
@@ -38,6 +43,9 @@ export const Item: FC<ItemProps> = ({
   onRemoveField,
   onUpdateField,
   onEditField,
+  onCollapse,
+  canCollapse = false,
+  collapsed = false,
   selectedEditField,
   moveLevels = false,
 }) => {
@@ -308,6 +316,33 @@ export const Item: FC<ItemProps> = ({
           >
             <DeleteOutlineIcon size={16} />
           </button>
+
+          {canCollapse && node.type === 'group' ? (
+            <div
+              role="button"
+              className="clickable"
+              style={{
+                width: 60,
+                height: 60,
+                backgroundColor: 'transparent',
+                color: '#2e3f50',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 6,
+                borderRadius: 4,
+                padding: 0,
+              }}
+              onClick={() => onCollapse?.(node)}
+              onKeyDown={() => {}}
+            >
+              {collapsed ? (
+                <ChevronLeftIcon size={30} />
+              ) : (
+                <ChevronDownIcon size={30} />
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

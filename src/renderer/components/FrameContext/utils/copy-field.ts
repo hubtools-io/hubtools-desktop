@@ -11,7 +11,7 @@ export const copyField = (inputArr: any, field: any) => {
   arr.forEach((item: any, i: any) => {
     const internalId = shortid();
 
-    if (JSON.stringify(item) === JSON.stringify(field)) {
+    if (!matchFound && JSON.stringify(item) === JSON.stringify(field)) {
       matchFound = true;
       newCopyArr.splice(i + 1, 0, {
         ...item,
@@ -23,7 +23,7 @@ export const copyField = (inputArr: any, field: any) => {
 
     if (!matchFound && item.children && item.type === 'group') {
       item.children.forEach((item2: any, i2: any) => {
-        if (JSON.stringify(item2) === JSON.stringify(field)) {
+        if (!matchFound && JSON.stringify(item2) === JSON.stringify(field)) {
           const internalId2 = shortid();
 
           matchFound = true;
@@ -39,7 +39,10 @@ export const copyField = (inputArr: any, field: any) => {
           item2.children.forEach((item3: any, i3: any) => {
             const internalId3 = shortid();
 
-            if (JSON.stringify(item3) === JSON.stringify(field)) {
+            if (
+              !matchFound &&
+              JSON.stringify(item3) === JSON.stringify(field)
+            ) {
               matchFound = true;
               newCopyArr[i].children[i2].children.splice(i3 + 1, 0, {
                 ...item3,
@@ -53,7 +56,10 @@ export const copyField = (inputArr: any, field: any) => {
               item3.children.forEach((item4: any, i4: any) => {
                 const internalId4 = shortid();
 
-                if (JSON.stringify(item4) === JSON.stringify(field)) {
+                if (
+                  !matchFound &&
+                  JSON.stringify(item4) === JSON.stringify(field)
+                ) {
                   matchFound = true;
                   newCopyArr[i].children[i2].children[i3].children.splice(
                     i4 + 1,
@@ -71,7 +77,10 @@ export const copyField = (inputArr: any, field: any) => {
                   item4.children.forEach((item5: any, i5: any) => {
                     const internalId5 = shortid();
 
-                    if (JSON.stringify(item4) === JSON.stringify(field)) {
+                    if (
+                      !matchFound &&
+                      JSON.stringify(item4) === JSON.stringify(field)
+                    ) {
                       matchFound = true;
                       newCopyArr[i].children[i2].children[i3].children[
                         i4

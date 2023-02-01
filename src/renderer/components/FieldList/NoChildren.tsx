@@ -1,8 +1,15 @@
 import { FC } from 'react';
 
-export const NoChildren: FC = (props) => {
+export type NoChildrenProps = {
+  condensed?: boolean;
+};
+
+export const NoChildren: FC<NoChildrenProps> = ({ condensed, ...props }) => {
   return (
-    <li className="between-add" {...props}>
+    <li
+      className={condensed ? 'between-add-condensed' : 'between-add'}
+      {...props}
+    >
       <span
         style={{
           color: 'rgba(255, 255, 255, 0.5)',
@@ -10,7 +17,7 @@ export const NoChildren: FC = (props) => {
           letterSpacing: 0.5,
           userSelect: 'none',
           display: 'block',
-          marginBottom: 10,
+          marginBottom: condensed ? 0 : 10,
         }}
       >
         Group has no children.
