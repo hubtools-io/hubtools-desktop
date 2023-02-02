@@ -340,7 +340,7 @@ body::-webkit-scrollbar-thumb,
 }
 
 .react-confirm-alert-body {
-  width: 500px !important;
+  width: 550px !important;
 }
 
 .react-confirm-alert-button-group > button {

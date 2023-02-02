@@ -45,6 +45,7 @@ import { defaultFile } from '../FrameContext/defaultFields/file';
 import { defaultFollowupEmail } from '../FrameContext/defaultFields/followupemail';
 import { defaultFont } from '../FrameContext/defaultFields/font';
 import { defaultForm } from '../FrameContext/defaultFields/form';
+import { defaultGradient } from '../FrameContext/defaultFields/gradient';
 
 export const typeIconSize = 24;
 
@@ -67,9 +68,9 @@ export const typeIconLookup = {
   followupemail: <EmailArrowRightOutlineIcon size={typeIconSize} />,
   font: <FormatSizeIcon size={typeIconSize} />,
   form: <FormSelectIcon size={typeIconSize} />,
+  gradient: <GradientHorizontalIcon size={typeIconSize} />,
 
   // ...
-  gradient: <GradientHorizontalIcon size={typeIconSize} />,
   group: <GroupIcon size={typeIconSize} />,
   groupstyletab: <GroupIcon size={typeIconSize} />,
   icon: <AlphaIIcon size={typeIconSize} />,
@@ -167,5 +168,9 @@ export const fieldsChoices = {
   form: {
     label: 'Form',
     default: defaultForm,
+  },
+  gradient: {
+    label: 'Gradient',
+    default: defaultGradient,
   },
 };

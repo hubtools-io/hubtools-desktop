@@ -187,6 +187,25 @@ export interface FormField extends BaseField {
   };
 }
 
+export type Color = {
+  color: {
+    r?: number;
+    g?: number;
+    b: number;
+    a: number;
+  };
+};
+
+export interface GradientField extends BaseField {
+  default?: {
+    colors?: Color[];
+  };
+  side_or_corner?: {
+    verticalSize?: string | null;
+    horizontalSide?: string | null;
+  };
+}
+
 export interface GroupField extends BaseField {
   tab?: string | null;
   expanded?: boolean;
@@ -215,7 +234,8 @@ export type Field = RepeaterField &
   EmbedField &
   FileField &
   FollowupEmailField &
-  FontField & {
+  FontField &
+  GradientField & {
     id: string;
     internalId?: any;
   };

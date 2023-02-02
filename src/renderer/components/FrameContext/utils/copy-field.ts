@@ -1,5 +1,5 @@
-import shortid from 'shortid';
 import { formatFieldArray } from './format-field-array';
+import { hubId } from './hub-id';
 
 export const copyField = (inputArr: any, field: any) => {
   let arr = formatFieldArray(inputArr);
@@ -9,7 +9,7 @@ export const copyField = (inputArr: any, field: any) => {
   const newCopyArr = [...arr] as any;
 
   arr.forEach((item: any, i: any) => {
-    const internalId = shortid();
+    const internalId = hubId();
 
     if (!matchFound && JSON.stringify(item) === JSON.stringify(field)) {
       matchFound = true;
@@ -24,7 +24,7 @@ export const copyField = (inputArr: any, field: any) => {
     if (!matchFound && item.children && item.type === 'group') {
       item.children.forEach((item2: any, i2: any) => {
         if (!matchFound && JSON.stringify(item2) === JSON.stringify(field)) {
-          const internalId2 = shortid();
+          const internalId2 = hubId();
 
           matchFound = true;
           newCopyArr[i].children.splice(i2 + 1, 0, {
@@ -37,7 +37,7 @@ export const copyField = (inputArr: any, field: any) => {
 
         if (!matchFound && item2.children && item2.type === 'group') {
           item2.children.forEach((item3: any, i3: any) => {
-            const internalId3 = shortid();
+            const internalId3 = hubId();
 
             if (
               !matchFound &&
@@ -54,7 +54,7 @@ export const copyField = (inputArr: any, field: any) => {
 
             if (!matchFound && item3.children && item3.type === 'group') {
               item3.children.forEach((item4: any, i4: any) => {
-                const internalId4 = shortid();
+                const internalId4 = hubId();
 
                 if (
                   !matchFound &&
@@ -75,7 +75,7 @@ export const copyField = (inputArr: any, field: any) => {
 
                 if (!matchFound && item4.children && item4.type === 'group') {
                   item4.children.forEach((item5: any, i5: any) => {
-                    const internalId5 = shortid();
+                    const internalId5 = hubId();
 
                     if (
                       !matchFound &&

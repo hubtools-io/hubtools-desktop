@@ -100,7 +100,7 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
                 letterSpacing: 1,
               }}
             >
-              Clear
+              Close
             </span>
           </div>
         ) : null}

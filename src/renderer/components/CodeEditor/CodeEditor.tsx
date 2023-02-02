@@ -1,11 +1,11 @@
-import { FC, HTMLProps, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, HTMLProps, useEffect, useRef, useState } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { clone } from 'lodash';
-import shortid from 'shortid';
 import { FrameFile } from '../FrameContext/FrameContext.types';
 import {
   formatFieldArray,
   formatFieldString,
+  hubId,
   isValidJson,
   removeFieldInternalId,
 } from '../FrameContext/utils';
@@ -28,6 +28,7 @@ import { defaultFile } from '../FrameContext/defaultFields/file';
 import { defaultFollowupEmail } from '../FrameContext/defaultFields/followupemail';
 import { defaultFont } from '../FrameContext/defaultFields/font';
 import { defaultForm } from '../FrameContext/defaultFields/form';
+import { defaultGradient } from '../FrameContext/defaultFields/gradient';
 
 const formatCode = (inputCode: any) => {
   let formattedCode = formatFieldString(inputCode);
@@ -37,7 +38,7 @@ const formatCode = (inputCode: any) => {
 };
 
 function createDependencyProposals(range: any, monaco: any) {
-  const nameSuffix = shortid();
+  const nameSuffix = hubId();
   return [
     {
       label: '"group"',
@@ -241,6 +242,16 @@ function createDependencyProposals(range: any, monaco: any) {
       insertText: `${formatFieldString({
         ...defaultForm,
         name: `${defaultForm.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"gradient"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The gradient email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultGradient,
+        name: `${defaultGradient.name}_${nameSuffix}`,
       })},`,
       range,
     },

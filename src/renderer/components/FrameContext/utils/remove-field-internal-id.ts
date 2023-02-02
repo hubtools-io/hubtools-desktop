@@ -1,4 +1,3 @@
-import shortid from 'shortid';
 import { formatFieldArray } from './format-field-array';
 
 export const removeFieldInternalId = (inputArr: any) => {

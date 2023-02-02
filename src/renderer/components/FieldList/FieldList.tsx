@@ -1,10 +1,13 @@
 import { get as lsGet, set as lsSet } from 'local-storage';
 import { cloneElement, FC, HTMLProps, useEffect, useState } from 'react';
-import shortid from 'shortid';
 import PlusIcon from 'mdi-react/PlusIcon';
 import { cloneDeep } from 'lodash';
 import { FrameFile } from '../FrameContext/FrameContext.types';
-import { addFieldInternalId, formatFieldArray } from '../FrameContext/utils';
+import {
+  addFieldInternalId,
+  formatFieldArray,
+  hubId,
+} from '../FrameContext/utils';
 import { Item } from './Item';
 import { copyItem, moveItemDown, removeItem, updateItem } from './utils';
 import { moveItemUp } from './utils/move-item-up';
@@ -164,7 +167,7 @@ export const FieldList: FC<FieldListProps> = ({
   };
 
   const handleAddField = (defaultField: Field, topGroup?: boolean) => {
-    const newInternalId = shortid();
+    const newInternalId = hubId();
 
     const newDefaultField = {
       ...defaultField,
