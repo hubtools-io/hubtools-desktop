@@ -192,6 +192,10 @@ input:-moz-placeholder {
   border-radius: 6px;
 }
 
+.field-list > ul {
+  padding: 5px 20px 20px 20px;
+}
+
 .field-list-x > ul {
   width: calc(100% - 20px) !important;
 }
@@ -221,6 +225,11 @@ input:-moz-placeholder {
   margin-bottom: 0px;
 }
 
+.field-list ul li.collapsed-child {
+  margin-bottom: 0 !important;
+  background-color: rgba(128, 151, 173, 0) !important;
+}
+
 .field-list ul li .list-item {
   width: 100%;
   height: 100%;
@@ -230,6 +239,11 @@ input:-moz-placeholder {
   color: #2e3f50;
   overflow: hidden;
   transition: all 0.3s ease;
+}
+
+.field-list ul li .list-item.list-item-condensed {
+  padding: 0px 20px 0px 10px !important;
+  margin-bottom: 10px !important;
 }
 
 .field-list ul li .list-item.list-item-group {

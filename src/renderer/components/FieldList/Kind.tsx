@@ -17,6 +17,7 @@ export const Kind: FC<KindProps> = ({ muted = false, kind }) => (
       borderRadius: 4,
       letterSpacing: 1,
       fontWeight: 600,
+      whiteSpace: 'nowrap',
     }}
   >
     {kind}

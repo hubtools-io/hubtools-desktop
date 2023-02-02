@@ -144,6 +144,9 @@ ipcMain.on('open-directory', (event: any, args: any) => {
       }
 
       if (result.canceled || result.filePaths.length === 0) {
+        event.sender.send('receive-msg', {
+          text: '',
+        });
         event.sender.send('get-open-directory', false);
       } else {
         event.sender.send('receive-msg', {

@@ -14,6 +14,8 @@ export const Name: FC<NameProps> = ({ name }) => (
       display: 'inline-block',
       transform: 'translateY(-1px)',
       marginBottom: 6,
+      marginTop: 4,
+      whiteSpace: 'nowrap',
     }}
   >
     [{name}]

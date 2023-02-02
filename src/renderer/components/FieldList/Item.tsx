@@ -6,8 +6,8 @@ import ContentCopyIcon from 'mdi-react/ContentCopyIcon';
 import DeleteOutlineIcon from 'mdi-react/DeleteOutlineIcon';
 import PencilIcon from 'mdi-react/PencilIcon';
 import PlusIcon from 'mdi-react/PlusIcon';
-import ChevronDownIcon from 'mdi-react/ChevronDownIcon';
-import ChevronLeftIcon from 'mdi-react/ChevronLeftIcon';
+import ArrowCollapseVerticalIcon from 'mdi-react/ArrowCollapseVerticalIcon';
+import ArrowExpandVerticalIcon from 'mdi-react/ArrowExpandVerticalIcon';
 import { Kind } from './Kind';
 import { Label } from './Label';
 import { Name } from './Name';
@@ -18,6 +18,7 @@ export type ItemProps = {
   node: any;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
+  condensed?: boolean;
   onMoveDown?: (field: Field) => void;
   onMoveUp?: (field: Field, moveToTopLevel: boolean) => void;
   onAddField?: (field: Field) => void;
@@ -36,6 +37,7 @@ export const Item: FC<ItemProps> = ({
   node,
   canMoveUp = true,
   canMoveDown = true,
+  condensed = false,
   onMoveDown,
   onMoveUp,
   onAddField,
@@ -73,9 +75,9 @@ export const Item: FC<ItemProps> = ({
 
   return (
     <div
-      className={`list-item ${isParent ? 'has-children' : 'no-children'} ${
-        node.type === 'group' ? 'list-item-group' : ''
-      }`}
+      className={`list-item ${condensed ? 'list-item-condensed' : ''} ${
+        isParent ? 'has-children' : 'no-children'
+      } ${node.type === 'group' ? 'list-item-group' : ''}`}
       style={{
         backgroundColor:
           selectedEditField?.internalId === node.internalId
@@ -103,50 +105,30 @@ export const Item: FC<ItemProps> = ({
               paddingRight: 4,
               height: 50,
               display: 'flex',
-              flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 5,
               color: 'rgba(46, 63, 80, 0.4)',
+              flexDirection: condensed ? 'row' : 'column',
             }}
           >
-            {moveLevels ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 30,
-                  height: 20,
-                  marginBottom: 10,
-                  cursor: canMoveUp ? 'pointer' : 'not-allowed',
-                  opacity: canMoveUp ? 1 : 0.2,
-                }}
-                role="button"
-                onClick={() => onMoveUp?.(node, moveLevels)}
-                onKeyDown={() => {}}
-              >
-                <ArrowUpBoldOutlineIcon size={20} />
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 30,
-                  height: 20,
-                  marginBottom: 10,
-                  cursor: canMoveUp ? 'pointer' : 'not-allowed',
-                  opacity: canMoveUp ? 1 : 0.2,
-                }}
-                role="button"
-                onClick={() => onMoveUp?.(node, moveLevels)}
-                onKeyDown={() => {}}
-              >
-                <ArrowUpBoldIcon size={20} />
-              </div>
-            )}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: condensed ? 20 : 30,
+                height: condensed ? 16 : 20,
+                marginBottom: condensed ? 0 : 10,
+                cursor: canMoveUp ? 'pointer' : 'not-allowed',
+                opacity: canMoveUp ? 1 : 0.2,
+              }}
+              role="button"
+              onClick={() => onMoveUp?.(node, moveLevels)}
+              onKeyDown={() => {}}
+            >
+              <ArrowUpBoldIcon size={20} />
+            </div>
 
             <div
               style={{
@@ -168,8 +150,8 @@ export const Item: FC<ItemProps> = ({
 
           <div
             style={{
-              width: 50,
-              height: 50,
+              width: condensed ? 20 : 50,
+              height: condensed ? 20 : 50,
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'center',
@@ -182,6 +164,7 @@ export const Item: FC<ItemProps> = ({
               color: 'rgba(46, 63, 80, 0.4)',
               borderRadius: 5,
             }}
+            title={node.type}
           >
             {Object.entries(typeIconLookup).map(
               ([type, element]: any, index: number) => {
@@ -194,34 +177,37 @@ export const Item: FC<ItemProps> = ({
               }
             )}
           </div>
+
           <div
             style={{
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: condensed ? 'row' : 'column',
               justifyContent: 'flex-start',
-              alignItems: 'flex-start',
+              alignItems: condensed ? 'center' : 'flex-start',
             }}
           >
             <Label label={node.label} />
-            <Name name={node.name} />
+            {condensed ? null : <Name name={node.name} />}
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Kind kind={node.type} />
+            {condensed ? null : (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Kind kind={node.type} />
 
-              {node.tab ? (
-                <>
-                  <div style={{ width: 10 }} />
-                  <Kind kind={`${node.tab} Tab`} muted />
-                </>
-              ) : null}
+                {node.tab ? (
+                  <>
+                    <div style={{ width: 10 }} />
+                    <Kind kind={`${node.tab} Tab`} muted />
+                  </>
+                ) : null}
 
-              {node.repeater ? (
-                <>
-                  <div style={{ width: 10 }} />
-                  <Kind kind="Repeater" muted />
-                </>
-              ) : null}
-            </div>
+                {node.repeater ? (
+                  <>
+                    <div style={{ width: 10 }} />
+                    <Kind kind="Repeater" muted />
+                  </>
+                ) : null}
+              </div>
+            )}
           </div>
         </div>
 
@@ -317,7 +303,7 @@ export const Item: FC<ItemProps> = ({
             <DeleteOutlineIcon size={16} />
           </button>
 
-          {canCollapse && node.type === 'group' ? (
+          {!condensed && canCollapse && node.type === 'group' ? (
             <div
               role="button"
               className="clickable"
@@ -332,14 +318,16 @@ export const Item: FC<ItemProps> = ({
                 marginLeft: 6,
                 borderRadius: 4,
                 padding: 0,
+                opacity: 0.7,
               }}
               onClick={() => onCollapse?.(node)}
               onKeyDown={() => {}}
+              title={collapsed ? 'Expand' : 'Collapse'}
             >
               {collapsed ? (
-                <ChevronLeftIcon size={30} />
+                <ArrowCollapseVerticalIcon size={20} />
               ) : (
-                <ChevronDownIcon size={30} />
+                <ArrowExpandVerticalIcon size={20} />
               )}
             </div>
           ) : null}

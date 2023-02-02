@@ -2,6 +2,8 @@ import { get as lsGet, set as lsSet } from 'local-storage';
 import { cloneElement, FC, HTMLProps, useEffect, useState } from 'react';
 import PlusIcon from 'mdi-react/PlusIcon';
 import { cloneDeep } from 'lodash';
+import ArrowExpandVerticalIcon from 'mdi-react/ArrowExpandVerticalIcon';
+import ArrowCollapseVerticalIcon from 'mdi-react/ArrowCollapseVerticalIcon';
 import { FrameFile } from '../FrameContext/FrameContext.types';
 import {
   addFieldInternalId,
@@ -21,6 +23,7 @@ import { FieldEditPanel } from './FieldEditPanel';
 type Field = any;
 
 const collapsedListKey = 'hubtools_collapsed_list';
+const collapsedAllKey = 'hubtools_collapsed_allt';
 
 export type FieldListProps = HTMLProps<HTMLDivElement> & {
   frameFile?: FrameFile;
@@ -40,10 +43,17 @@ export const FieldList: FC<FieldListProps> = ({
   const [collapsed, setCollapsed] = useState<string[]>(
     lsGet(collapsedListKey) || []
   );
+  const [collapseAll, setCollapseAll] = useState<boolean>(
+    lsGet(collapsedAllKey) || false
+  );
 
   useEffect(() => {
     lsSet(collapsedListKey, collapsed);
   }, [collapsed]);
+
+  useEffect(() => {
+    lsSet(collapsedAllKey, collapseAll);
+  }, [collapseAll]);
 
   useEffect(() => {
     if (!frameFile || !frameFile.contents) {
@@ -210,8 +220,9 @@ export const FieldList: FC<FieldListProps> = ({
   };
 
   const handleCollapseItem = (field: Field) => {
+    setCollapseAll(false);
     setCollapsed((prevValue: any) => {
-      const alreadyCollapsed = prevValue.includes(field.name);
+      const alreadyCollapsed = collapseAll || prevValue.includes(field.name);
 
       const newValue = alreadyCollapsed
         ? prevValue.filter((v: any) => v !== field.name)
@@ -219,6 +230,16 @@ export const FieldList: FC<FieldListProps> = ({
 
       return newValue;
     });
+  };
+
+  const handleCollapseAll = () => {
+    setCollapsed([]);
+    setCollapseAll(true);
+  };
+
+  const handleExpandAll = () => {
+    setCollapsed([]);
+    setCollapseAll(false);
   };
 
   const renderNode = (node: Field, index: number, subList: Field[]) => {
@@ -243,11 +264,13 @@ export const FieldList: FC<FieldListProps> = ({
           onEditField={handleSelectToEdit}
           onCollapse={handleCollapseItem}
           canCollapse
-          collapsed={collapsed.includes(node.name)}
+          collapsed={collapseAll || collapsed.includes(node.name)}
           selectedEditField={editingField}
         />
 
-        {node.type === 'group' && !collapsed.includes(node.name) ? (
+        {node.type === 'group' &&
+        !collapseAll &&
+        !collapsed.includes(node.name) ? (
           <ul>
             {node.children.length > 0 ? (
               node.children.map((childNode: Field, indx: number) => {
@@ -259,63 +282,42 @@ export const FieldList: FC<FieldListProps> = ({
           </ul>
         ) : null}
 
-        {node.type === 'group' && collapsed.includes(node.name) ? (
+        {node.type === 'group' &&
+        (collapseAll || collapsed.includes(node.name)) ? (
           <ul>
             {node.children.length > 0 ? (
               node.children.map((childNode: Field, indx: number) => {
+                const childFirstInSubList = indx === 0;
+                const childLastInSubList = node.children.length - 1 === indx;
+                const childTopLevel = false;
+
                 return (
                   <li
-                    key={childNode.internalId}
+                    key={`${childNode.internalId}`}
                     id={`node-${childNode.name}`}
-                    style={{
-                      padding: '10px 14px',
-                      fontSize: 12,
-                      display: 'flex',
-                      justifyContent: 'flex-start',
-                      alignItems: 'center',
-                      background: '#fff',
-                      borderTop:
-                        childNode.type.toLowerCase() === 'group'
-                          ? '3px solid #ff7a59'
-                          : undefined,
-                    }}
+                    className="collapsed-child"
                   >
-                    {Object.entries(typeIconLookup).map(
-                      ([type, element]: any, icInd: number) => {
-                        return childNode.type === type
-                          ? cloneElement(element, {
-                              key: icInd,
-                              ...element.props,
-                              size: 14,
-                              color: 'rgba(46, 63, 80, 0.4)',
-                            })
-                          : null;
+                    <Item
+                      condensed
+                      key={`${childNode.internalId}`}
+                      node={childNode}
+                      canMoveUp={!childFirstInSubList}
+                      canMoveDown={!childLastInSubList}
+                      moveLevels={childFirstInSubList && !childTopLevel}
+                      onMoveDown={handleMoveItemDown}
+                      onMoveUp={handleMoveItemUp}
+                      onAddField={handleOpenModal}
+                      onUpdateField={handleUpdateField}
+                      onRemoveField={handleRemoveField}
+                      onCopyField={handleCopyField}
+                      onEditField={handleSelectToEdit}
+                      onCollapse={handleCollapseItem}
+                      canCollapse
+                      collapsed={
+                        collapseAll || collapsed.includes(childNode.name)
                       }
-                    )}
-                    <span
-                      style={{
-                        textTransform: 'capitalize',
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        marginRight: 10,
-                        color: '#1e1e1e',
-                        marginLeft: 15,
-                      }}
-                    >
-                      {childNode.label}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 400,
-                        opacity: 0.75,
-                        letterSpacing: 0.5,
-                        display: 'inline-block',
-                        color: '#2e3f50',
-                      }}
-                    >
-                      [{childNode.type}]
-                    </span>
+                      selectedEditField={editingField}
+                    />
                   </li>
                 );
               })
@@ -440,6 +442,51 @@ export const FieldList: FC<FieldListProps> = ({
                   style={{ transform: 'translateY(-0.25px)', marginRight: 10 }}
                 />
                 <span style={{ userSelect: 'none' }}>Add Field</span>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                maxWidth: '750px',
+                padding: '0 20px',
+                fontSize: 14,
+                marginTop: 20,
+                color: 'rgba(255, 255, 255, 0.75)',
+              }}
+            >
+              <div
+                className="clickable"
+                style={{
+                  marginRight: 30,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                role="button"
+                onClick={handleCollapseAll}
+                onKeyDown={() => {}}
+              >
+                <ArrowCollapseVerticalIcon
+                  style={{ marginRight: 6 }}
+                  size={14}
+                />
+                <span style={{ userSelect: 'none' }}>Collapse All</span>
+              </div>
+              <div
+                className="clickable"
+                style={{
+                  marginRight: 30,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                role="button"
+                onClick={handleExpandAll}
+                onKeyDown={() => {}}
+              >
+                <ArrowExpandVerticalIcon style={{ marginRight: 6 }} size={14} />
+                <span style={{ userSelect: 'none' }}>Expand All</span>
               </div>
             </div>
 

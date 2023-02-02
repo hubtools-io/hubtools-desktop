@@ -9,8 +9,8 @@ export const Label: FC<LabelProps> = ({ label }) => (
     style={{
       fontSize: 16,
       fontWeight: 600,
-      marginRight: 6,
-      marginBottom: 4,
+      marginRight: 10,
+      whiteSpace: 'nowrap',
     }}
   >
     {label}
