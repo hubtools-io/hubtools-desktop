@@ -147,7 +147,8 @@ ipcMain.on('open-directory', (event: any, args: any) => {
         event.sender.send('receive-msg', {
           text: '',
         });
-        event.sender.send('get-open-directory', false);
+
+        event.sender.send('get-open-directory', 499);
       } else {
         event.sender.send('receive-msg', {
           text: 'Directory opening...',

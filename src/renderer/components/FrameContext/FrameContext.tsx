@@ -78,6 +78,10 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
 
   useEffect(() => {
     window.electron.getOpenDirectory((data: any) => {
+      if (data === 499) {
+        setDirLoading(false);
+      }
+
       if (
         data &&
         data.name !== undefined &&
