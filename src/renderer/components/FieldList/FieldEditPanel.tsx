@@ -31,10 +31,6 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
   //   section.scrollTo({ top: 0, behavior: 'smooth' });
   // }, [editingField]);
 
-  if (!editingField) {
-    return null;
-  }
-
   return (
     <div
       {...props}
