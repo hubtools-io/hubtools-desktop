@@ -30,7 +30,7 @@ export const SmallButton: FC<SmallButtonProps> = ({
         background: '#ffffff',
         color: '#2e3f50',
         height: 22,
-        display: 'flex',
+        display: 'inline-flex',
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',

@@ -1,13 +1,23 @@
 import ChevronDownIcon from 'mdi-react/ChevronDownIcon';
 import CircleIcon from 'mdi-react/CircleIcon';
-import FileIcon from 'mdi-react/FileIcon';
-import FileCancelOutlineIcon from 'mdi-react/FileCancelOutlineIcon';
-import FolderIcon from 'mdi-react/FolderIcon';
 import LoadingIcon from 'mdi-react/LoadingIcon';
 import { FC, HTMLProps, useEffect, useState } from 'react';
 import { hubspotFieldFile } from 'renderer/Dashboard/utils';
-import ChevronRightIcon from 'mdi-react/ChevronRightIcon';
 import { Directory } from '../FrameContext/FrameContext.types';
+import { DirectoryIcon } from './DirectoryIcon';
+import { ModuleIcon } from './ModuleIcon';
+import { ExpandIcon } from './ExpandIcon';
+import { CollapseIcon } from './CollapseIcon';
+import { FieldsIcon } from './FieldsIcon';
+import { CSSIcon } from './CSSIcon';
+import { HtmlIcon } from './HtmlIcon';
+import { JavascriptIcon } from './JavascriptIcon';
+import { SassLangaugeIcon } from './SassLangaugeIcon';
+import { MetaIcon } from './MetaIcon';
+import { JsonIcon } from './JsonIcon';
+import { MarkdownIcon } from './MarkdownIcon';
+import { TypescriptIcon } from './TypescriptIcon';
+import { DefaultFileIcon } from './DefaultFileIcon';
 
 export type ExplorerFilesProps = HTMLProps<HTMLDivElement> & {
   directory?: Directory;
@@ -86,11 +96,14 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
         <li>
           <div
             role="button"
-            className={
-              clickableFiles.includes(sourceItem.name) || sourceItem.isDirectory
-                ? 'clickable-subtle'
-                : 'clickable-subtle-disabled'
-            }
+            className={`clickable-subtle ${
+              selectedFile?.path === sourceItem.path ? 'clickable-active' : ''
+            } ${
+              !clickableFiles.includes(sourceItem.name) &&
+              !sourceItem.isDirectory
+                ? 'clickable-subtle-disabled'
+                : ''
+            }`}
             style={{
               padding: 6,
               display: 'flex',
@@ -108,11 +121,6 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
                 selectedFile?.path === sourceItem.path
                   ? 'rgba(79, 100, 121, 0.5)'
                   : 'transparent',
-              opacity:
-                clickableFiles.includes(sourceItem.name) ||
-                sourceItem.isDirectory
-                  ? '1'
-                  : '0.6',
               cursor: 'pointer',
             }}
             onClick={() => handleFileClick(sourceItem)}
@@ -122,43 +130,60 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
               style={{
                 display: 'flex',
                 justifyContent: 'flex-start',
-                alignItems: 'center',
+                alignItems: 'baseline',
                 boxSizing: 'border-box',
               }}
             >
               {sourceItem.isDirectory ? (
                 <>
                   {expanded.includes(sourceItem.path) ? (
-                    <ChevronDownIcon size={14} style={{ marginRight: 6 }} />
+                    <ExpandIcon />
                   ) : (
-                    <ChevronRightIcon size={14} style={{ marginRight: 6 }} />
+                    <CollapseIcon />
                   )}
-                  <FolderIcon
-                    size={14}
-                    style={{ marginRight: 6, flexShrink: 0, flexGrow: 0 }}
-                  />
+
+                  {(sourceItem.name as string).endsWith('.module') ? (
+                    <ModuleIcon />
+                  ) : (
+                    <DirectoryIcon />
+                  )}
+
                   <span style={{ userSelect: 'none' }}>{sourceItem.name}</span>
                 </>
               ) : (
                 <>
-                  {clickableFiles.includes(sourceItem.name) ? (
-                    <FileIcon
-                      size={14}
-                      style={{ marginRight: 6 }}
-                      color={
-                        selectedFile?.path === sourceItem.path
-                          ? selectedFileValid
-                            ? '#ff7a59'
-                            : 'rgb(232, 90, 107)'
-                          : '#ff7a59'
-                      }
-                    />
-                  ) : (
-                    <FileCancelOutlineIcon
-                      size={14}
-                      style={{ marginRight: 6 }}
-                    />
-                  )}
+                  {sourceItem.name === 'meta.json' ? <MetaIcon /> : null}
+                  {sourceItem.name === 'fields.json' ? <FieldsIcon /> : null}
+                  {sourceItem.name.endsWith('.css') ? <CSSIcon /> : null}
+                  {sourceItem.name.endsWith('.html') ? <HtmlIcon /> : null}
+                  {sourceItem.name.endsWith('.js') ? <JavascriptIcon /> : null}
+                  {sourceItem.name.endsWith('.md') ? <MarkdownIcon /> : null}
+                  {sourceItem.name.endsWith('.ts') ? <TypescriptIcon /> : null}
+
+                  {sourceItem.name.endsWith('.scss') ||
+                  sourceItem.name.endsWith('.sass') ? (
+                    <SassLangaugeIcon />
+                  ) : null}
+
+                  {sourceItem.name !== 'meta.json' &&
+                  sourceItem.name !== 'fields.json' &&
+                  sourceItem.name.endsWith('.json') ? (
+                    <JsonIcon />
+                  ) : null}
+
+                  {sourceItem.name !== 'fields.json' &&
+                  sourceItem.name !== 'meta.json' &&
+                  !sourceItem.name.endsWith('.css') &&
+                  !sourceItem.name.endsWith('.js') &&
+                  !sourceItem.name.endsWith('.html') &&
+                  !sourceItem.name.endsWith('.json') &&
+                  !sourceItem.name.endsWith('.md') &&
+                  !sourceItem.name.endsWith('.scss') &&
+                  !sourceItem.name.endsWith('.sass') &&
+                  !sourceItem.name.endsWith('.ts') ? (
+                    <DefaultFileIcon />
+                  ) : null}
+
                   <span style={{ userSelect: 'none' }}>{sourceItem.name}</span>
                 </>
               )}

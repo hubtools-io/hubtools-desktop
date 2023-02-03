@@ -29,6 +29,22 @@ import { defaultFollowupEmail } from '../FrameContext/defaultFields/followupemai
 import { defaultFont } from '../FrameContext/defaultFields/font';
 import { defaultForm } from '../FrameContext/defaultFields/form';
 import { defaultGradient } from '../FrameContext/defaultFields/gradient';
+import { defaultHubDBRow } from '../FrameContext/defaultFields/hubdbrow';
+import { defaultHubDBTable } from '../FrameContext/defaultFields/hubdbtable';
+import { defaultIcon } from '../FrameContext/defaultFields/icon';
+import { defaultImage } from '../FrameContext/defaultFields/image';
+import { defaultLink } from '../FrameContext/defaultFields/link';
+import { defaultLogo } from '../FrameContext/defaultFields/logo';
+import { defaultNumber } from '../FrameContext/defaultFields/number';
+import { defaultPage } from '../FrameContext/defaultFields/page';
+import { defaultRichText } from '../FrameContext/defaultFields/richtext';
+import { defaultSimpleMenu } from '../FrameContext/defaultFields/simplemenu';
+import { defaultSpacing } from '../FrameContext/defaultFields/spacing';
+import { defaultTag } from '../FrameContext/defaultFields/tag';
+import { defaultText } from '../FrameContext/defaultFields/text';
+import { defaultTextAlignment } from '../FrameContext/defaultFields/textalignment';
+import { defaultUrl } from '../FrameContext/defaultFields/url';
+import { defaultVideo } from '../FrameContext/defaultFields/video';
 
 const formatCode = (inputCode: any) => {
   let formattedCode = formatFieldString(inputCode);
@@ -252,6 +268,170 @@ function createDependencyProposals(range: any, monaco: any) {
       insertText: `${formatFieldString({
         ...defaultGradient,
         name: `${defaultGradient.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"hubdbrow"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The hubdbrow email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultHubDBRow,
+        name: `${defaultHubDBRow.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"hubdbtable"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation:
+        'The hubdbtable email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultHubDBTable,
+        name: `${defaultHubDBTable.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"icon"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The icon email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultIcon,
+        name: `${defaultIcon.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"image"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The image email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultImage,
+        name: `${defaultImage.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"link"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The link email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultLink,
+        name: `${defaultLink.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"logo"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The logo email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultLogo,
+        name: `${defaultLogo.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"number"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The number email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultNumber,
+        name: `${defaultNumber.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"page"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The page email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultPage,
+        name: `${defaultPage.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"richtext"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The richtext email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultRichText,
+        name: `${defaultRichText.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"simplemenu"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation:
+        'The simplemenu email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultSimpleMenu,
+        name: `${defaultSimpleMenu.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"spacing"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The spacing email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultSpacing,
+        name: `${defaultSpacing.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"tag"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The tag email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultTag,
+        name: `${defaultTag.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"text"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The text email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultText,
+        name: `${defaultText.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"textalignment"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation:
+        'The textalignment email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultTextAlignment,
+        name: `${defaultTextAlignment.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"url"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: 'The url email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultUrl,
+        name: `${defaultUrl.name}_${nameSuffix}`,
+      })},`,
+      range,
+    },
+    {
+      label: '"videoplayer"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation:
+        'The videoplayer email field for hubspot modules and themes.',
+      insertText: `${formatFieldString({
+        ...defaultVideo,
+        name: `${defaultVideo.name}_${nameSuffix}`,
       })},`,
       range,
     },

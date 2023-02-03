@@ -31,28 +31,29 @@ class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
+
+    // autoUpdater.on('checking-for-update', () => {
+    //   mainWindow?.webContents.send('receive-msg', {
+    //     autoDismiss: true,
+    //     text: 'Checking for app updates...',
+    //   });
+    // });
+
+    // autoUpdater.on('update-available', () => {
+    //   mainWindow?.webContents.send('receive-msg', {
+    //     autoDismiss: true,
+    //     text: 'New app update found.',
+    //   });
+    // });
+
+    // autoUpdater.on('update-downloaded', () => {
+    //   mainWindow?.webContents.send('receive-msg', {
+    //     autoDismiss: true,
+    //     text: 'New app update has been downloaded.',
+    //   });
+    // });
+
     autoUpdater.checkForUpdatesAndNotify();
-
-    autoUpdater.on('checking-for-update', () => {
-      mainWindow?.webContents.send('receive-msg', {
-        autoDismiss: true,
-        text: 'Checking for app updates...',
-      });
-    });
-
-    autoUpdater.on('update-available', () => {
-      mainWindow?.webContents.send('receive-msg', {
-        autoDismiss: true,
-        text: 'New app update found.',
-      });
-    });
-
-    autoUpdater.on('update-downloaded', () => {
-      mainWindow?.webContents.send('receive-msg', {
-        autoDismiss: true,
-        text: 'New app update has been downloaded.',
-      });
-    });
 
     setInterval(() => {
       autoUpdater.checkForUpdatesAndNotify();
@@ -134,9 +135,15 @@ ipcMain.on('open-directory', (event: any, args: any) => {
     text: 'Select a directory from the dialog',
   });
 
+  if (!mainWindow) {
+    return;
+  }
+
   dialog
-    .showOpenDialog({
+    .showOpenDialog(mainWindow, {
       properties: ['openDirectory'],
+      buttonLabel: 'Open HubSpot CMS Theme',
+      message: 'Open HubSpot CMS Theme',
     })
     .then((result) => {
       if (directoryWatcher) {

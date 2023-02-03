@@ -104,7 +104,11 @@ button:not(.disabled):hover {
 .clickable-subtle {
   transition: all ease-in 0.1s !important;
   cursor: pointer !important;
-  opacity: 0.9 !important;
+  opacity: 0.8;
+}
+
+.clickable-subtle-active {
+  opacity: 1 !important;
 }
 
 .clickable-subtle:hover {
@@ -114,11 +118,11 @@ button:not(.disabled):hover {
 .clickable-subtle-disabled {
   transition: all ease-in 0.1s !important;
   cursor: not-allowed !important;
-  opacity: 0.6 !important;
+  opacity: 0.5 !important;
 }
 
 .clickable-subtle-disabled:hover {
-  opacity: 0.6 !important;
+  opacity: 0.5 !important;
 }
 
 li {
@@ -367,5 +371,15 @@ body::-webkit-scrollbar-thumb,
 
 .scrolling-to-node,
 .scrolling-to-node > div {
-  background: #ff7a59 !important;
+  opacity: 0.6 !important;
+}
+
+input {
+  transition: all 0.3s ease;
+  background: #262727 !important;
+}
+
+input:focus {
+  outline: none;
+  background: #424242 !important;
 }

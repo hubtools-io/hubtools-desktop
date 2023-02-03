@@ -84,7 +84,7 @@ export const FieldList: FC<FieldListProps> = ({
 
       setTimeout(() => {
         section.classList.remove('scrolling-to-node');
-      }, 1500);
+      }, 300);
     }
   };
 
@@ -124,10 +124,6 @@ export const FieldList: FC<FieldListProps> = ({
     return moveItemUp(field, workingFile, moveLevels, (updatedFile) => {
       setEditingField(undefined);
       onUpdateFile?.(updatedFile);
-
-      setTimeout(() => {
-        scrollToNode(field);
-      }, 200);
     });
   };
 
@@ -139,10 +135,6 @@ export const FieldList: FC<FieldListProps> = ({
     return moveItemDown(field, workingFile, (updatedFile) => {
       setEditingField(undefined);
       onUpdateFile?.(updatedFile);
-
-      setTimeout(() => {
-        scrollToNode(field);
-      }, 200);
     });
   };
 
@@ -195,7 +187,7 @@ export const FieldList: FC<FieldListProps> = ({
 
     setTimeout(() => {
       scrollToNode(newDefaultField);
-    }, 200);
+    }, 10);
 
     setEditingField(undefined);
     setShowModal(false);
@@ -242,13 +234,22 @@ export const FieldList: FC<FieldListProps> = ({
     setCollapseAll(false);
   };
 
+  const handleFieldSubmit = (payload: any) => {
+    console.log(payload, 'edited');
+    handleUpdateField(editingField, payload);
+  };
+
   const renderNode = (node: Field, index: number, subList: Field[]) => {
     const firstInSubList = index === 0;
     const lastInSubList = subList.length - 1 === index;
     const topLevel = subList === workingFile?.contents;
 
     return (
-      <li key={`${node.internalId}`} id={`node-${node.name}`}>
+      <li
+        key={`${node.internalId}`}
+        id={`node-${node.name}`}
+        className={`node-${node.name} node-${node.internalId}`}
+      >
         <Item
           key={`${node.internalId}`}
           node={node}
@@ -295,7 +296,7 @@ export const FieldList: FC<FieldListProps> = ({
                   <li
                     key={`${childNode.internalId}`}
                     id={`node-${childNode.name}`}
-                    className="collapsed-child"
+                    className={`collapsed-child node-${childNode.name} node-${childNode.internalId}`}
                   >
                     <Item
                       condensed
@@ -350,28 +351,6 @@ export const FieldList: FC<FieldListProps> = ({
     <>
       {showModal ? (
         <Modal onClose={handleCloseModal} modalTitle="Add a field">
-          <div
-            style={{
-              margin: 10,
-              width: '100%',
-              display: 'block',
-            }}
-          >
-            <div
-              style={{
-                marginTop: 10,
-                marginBottom: 20,
-                padding: '10px 15px',
-                borderRadius: 4,
-                background: '#fef4ea',
-                width: '100%',
-                color: 'rgb(51, 71, 91)',
-              }}
-            >
-              Additional HubSpot fields coming soon!
-            </div>
-          </div>
-
           {Object.entries(fieldsChoices).map(
             ([type, options], index: number) => {
               return (
@@ -452,6 +431,8 @@ export const FieldList: FC<FieldListProps> = ({
                 alignItems: 'center',
                 maxWidth: '750px',
                 padding: '0 20px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
                 fontSize: 14,
                 marginTop: 20,
                 color: 'rgba(255, 255, 255, 0.75)',
@@ -544,6 +525,7 @@ export const FieldList: FC<FieldListProps> = ({
         <FieldEditPanel
           editingField={editingField}
           onClearEdit={handleClearEdit}
+          onSubmit={handleFieldSubmit}
         />
       </FieldEditorFrame>
     </>

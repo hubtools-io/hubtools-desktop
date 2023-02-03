@@ -2,7 +2,7 @@ import { ColorField } from '../FrameContext.types';
 
 export const defaultColor = {
   name: 'default_color',
-  label: 'Default color',
+  label: 'Default Color',
   required: false,
   locked: false,
   type: 'color',

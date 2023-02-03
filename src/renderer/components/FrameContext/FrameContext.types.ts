@@ -1,12 +1,13 @@
 export type BaseField = {
+  id?: string;
   name: string;
   label: string;
-  required?: boolean;
-  locked?: boolean;
-  type: string;
+  required: boolean | null;
+  locked: boolean | null;
+  type?: string;
   inline_help_text?: string;
   help_text?: string;
-  default?: any;
+  display_width?: any;
 };
 
 export type RepeaterField = {
@@ -14,7 +15,7 @@ export type RepeaterField = {
     min?: number | null;
     max?: number | null;
     sorting_label_field?: string | null;
-    default?: number | null;
+    default: number | null;
   };
 };
 
@@ -56,7 +57,7 @@ export type SideBySideField = {
 };
 
 export interface AlignmentField extends BaseField {
-  alignment_direction: 'HORIZONTAL' | 'VERTICAL' | 'BOTH';
+  alignment_direction?: string;
   default: {
     horizontal_align?: string;
     vertical_align?: string;
@@ -98,13 +99,13 @@ export interface BorderField extends BaseField {
 
 export interface ChoiceField extends BaseField {
   choices?: any[] | null;
-  default?: string | null;
+  default: string | null;
   multiple?: string | null;
   display?: string | null;
 }
 
 export interface ColorField extends BaseField {
-  default?: {
+  default: {
     color?: string;
     opacity?: number;
   };
@@ -112,7 +113,7 @@ export interface ColorField extends BaseField {
 }
 
 export interface CTAField extends BaseField {
-  default?: string | null;
+  default: string | null;
 }
 
 export interface CRMObjectField extends BaseField {
@@ -125,21 +126,21 @@ export interface CRMObjectField extends BaseField {
 
 export interface CRMObjectPropertyField extends BaseField {
   object_type: string;
-  default?: {
+  default: {
     property?: string | null;
   };
 }
 
 export interface DateField extends BaseField {
-  default?: number | null;
+  default: number | null;
 }
 
 export interface DateTimeField extends BaseField {
-  default?: number | null;
+  default: number | null;
 }
 
 export interface EmailAddressField extends BaseField {
-  default?: string[] | null;
+  default: string[] | null;
 }
 
 export type EmbedSource = 'oembed' | 'html' | 'media_bridge';
@@ -149,7 +150,7 @@ export interface EmbedField extends BaseField {
   supported_source_types?: EmbedSource[];
   supported_oembed_types?: EmbedOEmbed[];
   supported_media_bridge_providers?: any[];
-  default?: {
+  default: {
     source_type?: 'oembed';
   };
 }
@@ -164,7 +165,7 @@ export interface FollowupEmailField extends BaseField {
 }
 
 export interface FontField extends BaseField {
-  default?: {
+  default: {
     size?: number | null;
     size_unit?: string | null;
     color?: string | null;
@@ -181,7 +182,7 @@ export interface FontField extends BaseField {
 }
 
 export interface FormField extends BaseField {
-  default?: {
+  default: {
     response_type?: string | null;
     message?: string | null;
   };
@@ -197,7 +198,7 @@ export type Color = {
 };
 
 export interface GradientField extends BaseField {
-  default?: {
+  default: {
     colors?: Color[];
   };
   side_or_corner?: {
@@ -210,6 +211,103 @@ export interface GroupField extends BaseField {
   tab?: string | null;
   expanded?: boolean;
   children: [];
+}
+
+export interface HubDBRowField extends BaseField {
+  table_name_or_id?: string | null;
+  columns_to_fetch?: string[] | null;
+  display_columns?: string[] | null;
+  display_format?: string | null;
+  default: {
+    id?: string | number | null;
+  };
+}
+
+export interface HubDBTableField extends BaseField {
+  default: string | number | null;
+}
+
+export interface IconField extends BaseField {
+  default: {
+    name?: string;
+    unicode?: string;
+    type?: string;
+  };
+  icon_set?: string;
+}
+
+export interface ImageField extends BaseField {
+  default: {
+    size_type?: string | null;
+    src?: string | null;
+    alt?: string | null;
+    loading?: string | null;
+  };
+  responsive?: boolean;
+  show_loading?: boolean;
+}
+
+export interface LinkField extends BaseField {
+  default: any;
+  supported_types?: string[] | null;
+  show_advanced_rel_options?: boolean | null;
+}
+
+export interface LogoField extends BaseField {
+  show_loading?: any;
+  default: any;
+}
+
+export interface MenuField extends BaseField {
+  default: any;
+}
+
+export interface NumberField extends BaseField {
+  default: any;
+  prefix?: any;
+  suffix?: any;
+  placeholder?: any;
+}
+
+export interface PageField extends BaseField {
+  default: any;
+}
+
+export interface RichTextField extends BaseField {
+  default: any;
+  enable_features?: any;
+}
+
+export interface SimpleMenuField extends BaseField {
+  default: any;
+}
+
+export interface SpacingField extends BaseField {
+  default: any;
+  limits?: any;
+}
+
+export interface TagField extends BaseField {
+  default: any;
+}
+
+export interface TextField extends BaseField {
+  default: any;
+}
+
+export interface TextAlignmentField extends BaseField {
+  default: any;
+  alignment_direction?: any;
+}
+
+export interface UrlField extends BaseField {
+  default: any;
+  supported_types?: any;
+}
+
+export interface VideoField extends BaseField {
+  default: any;
+  show_advanced_options?: any;
 }
 
 export type Field = RepeaterField &
@@ -235,8 +333,24 @@ export type Field = RepeaterField &
   FileField &
   FollowupEmailField &
   FontField &
-  GradientField & {
-    id: string;
+  GradientField &
+  HubDBRowField &
+  HubDBTableField &
+  IconField &
+  ImageField &
+  LinkField &
+  LogoField &
+  MenuField &
+  NumberField &
+  PageField &
+  RichTextField &
+  SimpleMenuField &
+  SpacingField &
+  TagField &
+  TextField &
+  TextAlignmentField &
+  UrlField &
+  VideoField & {
     internalId?: any;
   };
 

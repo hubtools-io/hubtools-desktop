@@ -5,9 +5,11 @@ import { Field } from '../FrameContext/FrameContext.types';
 import { Input } from '../Input';
 import { TextArea } from '../Textarea';
 import { TitleBar } from '../TitleBar';
+import { AlignmentForm } from './AlignmentForm';
 
 export type FieldEditPanelProps = HTMLProps<HTMLDivElement> & {
   onClearEdit?: () => void;
+  onSubmit?: (payload: any) => void;
   editingField?: Field;
   values?: any;
 };
@@ -15,41 +17,23 @@ export type FieldEditPanelProps = HTMLProps<HTMLDivElement> & {
 export const FieldEditPanel: FC<FieldEditPanelProps> = ({
   editingField,
   onClearEdit,
+  onSubmit,
   values,
   ...props
 }) => {
-  const defaultValues = {
-    name: '',
-  } as Field;
+  // useEffect(() => {
+  //   const section = document.querySelector(`#edit-form-scroll`);
 
-  const initialValues = editingField
-    ? { ...defaultValues, ...editingField }
-    : { ...defaultValues };
+  //   if (!(section instanceof HTMLElement)) {
+  //     return;
+  //   }
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState,
-    formState: { isValidating, errors },
-  } = useForm<any>({
-    defaultValues: initialValues,
-    mode: 'onSubmit',
-  });
+  //   section.scrollTo({ top: 0, behavior: 'smooth' });
+  // }, [editingField]);
 
-  const submitForm = useCallback((payload: any) => {
-    const nextPayload = { ...payload };
-  }, []);
-
-  const data = watch();
-
-  useEffect(() => {
-    if (formState.isValid && !isValidating) {
-      submitForm(data);
-    }
-  }, [formState, data, isValidating, submitForm]);
-
-  const handleFieldChange = (event: any, label: string) => {};
+  if (!editingField) {
+    return null;
+  }
 
   return (
     <div
@@ -108,6 +92,7 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
       <div>
         {editingField ? (
           <div
+            id="edit-form-scroll"
             className="scrollable-dark"
             style={{
               display: 'flex',
@@ -124,19 +109,6 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
               padding: '20px 20px',
             }}
           >
-            <div
-              style={{
-                marginTop: 10,
-                marginBottom: 20,
-                padding: '10px 15px',
-                borderRadius: 4,
-                background: '#fef4ea',
-                width: '100%',
-                color: 'rgb(51, 71, 91)',
-              }}
-            >
-              Editing fields with form coming soon.
-            </div>
             <div style={{ display: 'block', width: '100%', marginBottom: 25 }}>
               <span
                 style={{
@@ -164,33 +136,11 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
               </span>
             </div>
 
-            <form onSubmit={handleSubmit(submitForm)} style={{ width: '100%' }}>
-              {Object.entries(
-                omit(['children', 'internalId'], editingField)
-              ).map(([type, value], index: number) => {
-                const isObject = value instanceof Object;
-
-                return isObject ? (
-                  <TextArea
-                    key={index}
-                    label={type}
-                    placeholder={`${type}...`}
-                    {...register(type)}
-                    defaultValue={`${JSON.stringify(value, null, 4)}`}
-                    onChange={(e) => handleFieldChange(e, type)}
-                  />
-                ) : (
-                  <Input
-                    key={index}
-                    label={type}
-                    placeholder={`${type}...`}
-                    {...register(type)}
-                    defaultValue={`${value}`}
-                    onChange={(e) => handleFieldChange(e, type)}
-                  />
-                );
-              })}
-            </form>
+            <AlignmentForm
+              {...props}
+              editingField={editingField}
+              onSubmit={onSubmit}
+            />
           </div>
         ) : (
           <div
