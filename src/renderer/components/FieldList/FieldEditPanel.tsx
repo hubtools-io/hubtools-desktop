@@ -21,16 +21,6 @@ export const FieldEditPanel: FC<FieldEditPanelProps> = ({
   values,
   ...props
 }) => {
-  // useEffect(() => {
-  //   const section = document.querySelector(`#edit-form-scroll`);
-
-  //   if (!(section instanceof HTMLElement)) {
-  //     return;
-  //   }
-
-  //   section.scrollTo({ top: 0, behavior: 'smooth' });
-  // }, [editingField]);
-
   return (
     <div
       {...props}

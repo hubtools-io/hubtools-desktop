@@ -32,26 +32,26 @@ class AppUpdater {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
-    // autoUpdater.on('checking-for-update', () => {
-    //   mainWindow?.webContents.send('receive-msg', {
-    //     autoDismiss: true,
-    //     text: 'Checking for app updates...',
-    //   });
-    // });
+    autoUpdater.on('checking-for-update', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'Checking for app updates...',
+      });
+    });
 
-    // autoUpdater.on('update-available', () => {
-    //   mainWindow?.webContents.send('receive-msg', {
-    //     autoDismiss: true,
-    //     text: 'New app update found.',
-    //   });
-    // });
+    autoUpdater.on('update-available', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'New app update found.',
+      });
+    });
 
-    // autoUpdater.on('update-downloaded', () => {
-    //   mainWindow?.webContents.send('receive-msg', {
-    //     autoDismiss: true,
-    //     text: 'New app update has been downloaded.',
-    //   });
-    // });
+    autoUpdater.on('update-downloaded', () => {
+      mainWindow?.webContents.send('receive-msg', {
+        autoDismiss: true,
+        text: 'New app update will be installed on exit.',
+      });
+    });
 
     autoUpdater.checkForUpdatesAndNotify();
 

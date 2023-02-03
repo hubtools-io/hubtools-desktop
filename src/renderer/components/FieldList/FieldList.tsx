@@ -426,7 +426,6 @@ export const FieldList: FC<FieldListProps> = ({
 
             <div
               style={{
-                display: 'flex',
                 justifyContent: 'flex-end',
                 alignItems: 'center',
                 maxWidth: '750px',
@@ -436,6 +435,7 @@ export const FieldList: FC<FieldListProps> = ({
                 fontSize: 14,
                 marginTop: 20,
                 color: 'rgba(255, 255, 255, 0.75)',
+                display: 'none',
               }}
             >
               <div
