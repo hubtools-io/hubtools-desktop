@@ -10,6 +10,7 @@ import { FrameFile } from 'renderer/components/FrameContext/FrameContext.types';
 import { FrameContext } from 'renderer/components/FrameContext';
 import { confirmAlert } from 'react-confirm-alert';
 import { appVersion } from 'renderer/utils';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Button } from '../components/Button';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Navbar } from '../components/Navbar';
@@ -42,7 +43,6 @@ export const Dashboard = () => {
 
     directory,
     openDirectory,
-    closeDirectory,
 
     directoryLoading,
     setDirectoryLoading,
@@ -53,7 +53,6 @@ export const Dashboard = () => {
     updateFrameFile,
 
     unsavedFrameFile,
-    updateUnsavedFrameFile,
     saveFrameFile,
     revertFrameFile,
   } = useContext(FrameContext);
@@ -79,9 +78,9 @@ export const Dashboard = () => {
   }, [unsavedFrameFile]);
 
   const edited = useMemo(() => {
-    const checkFiles = unsavedFrameFile?.contents !== frameFile?.contents;
+    const isEdited = unsavedFrameFile?.contents !== frameFile?.contents;
 
-    return checkFiles || editorEdited;
+    return isEdited || editorEdited;
   }, [unsavedFrameFile, frameFile, editorEdited]);
 
   const frameBreadcrumbs = useMemo(() => {
@@ -103,10 +102,6 @@ export const Dashboard = () => {
 
   const handleOpenDirectory = () => {
     openDirectory();
-  };
-
-  const handleCloseDirectory = () => {
-    closeDirectory();
   };
 
   const onConfirmOpenFile = (file: FrameFile) => {
@@ -176,7 +171,7 @@ export const Dashboard = () => {
   };
 
   const handleUpdateUnsavedFile = (file: FrameFile) => {
-    updateUnsavedFrameFile(file);
+    updateFrameFile(file);
   };
 
   const handleEditorChange = (value: any) => {
@@ -196,6 +191,16 @@ export const Dashboard = () => {
   const handleHideFiles = () => {
     setHideFiles(!hideFiles);
   };
+
+  useHotkeys(
+    'meta+s, ctrl+s',
+    () => {
+      if (unsavedFrameFile) {
+        handleSaveFile(unsavedFrameFile);
+      }
+    },
+    { scopes: ['files'] }
+  );
 
   return (
     <Layout>
@@ -370,21 +375,17 @@ export const Dashboard = () => {
       </Layout.ViewBar>
 
       <Layout.Frame>
-        {currentView === 'CODE' &&
-        unsavedFrameFile &&
-        unsavedFrameFile.name &&
-        unsavedFrameFile.contents ? (
+        {currentView === 'CODE' && unsavedFrameFile && unsavedFrameFile.name ? (
           <CodeEditor
             file={unsavedFrameFile}
-            extension={unsavedFrameFile.name.split('.').pop()?.toLowerCase()}
-            code={
-              unsavedFrameFile.name.split('.').pop()?.toLowerCase() === 'json'
-                ? unsavedFrameFile.contents
-                : null
-            }
             onFileChange={handleEditorChange}
             onEdited={handleEdited}
             onValid={handleValid}
+            onFileSave={
+              unsavedFrameFile
+                ? () => handleSaveFile(unsavedFrameFile)
+                : undefined
+            }
           />
         ) : null}
 

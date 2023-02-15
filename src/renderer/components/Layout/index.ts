@@ -6,9 +6,9 @@ import { LayoutFrameTitle } from './LayoutFrameTitle';
 import { LayoutViewBar } from './LayoutViewBar';
 
 export default Object.assign(Layout, {
-  ControlBar: LayoutControlBar,
-  Explorer: LayoutExplorer,
-  Frame: LayoutFrame,
-  FrameTitle: LayoutFrameTitle,
-  ViewBar: LayoutViewBar,
+    ControlBar: LayoutControlBar,
+    Explorer: LayoutExplorer,
+    Frame: LayoutFrame,
+    FrameTitle: LayoutFrameTitle,
+    ViewBar: LayoutViewBar,
 });

@@ -1,41 +1,35 @@
-import {
-  Field,
-  FrameFile,
-} from 'renderer/components/FrameContext/FrameContext.types';
-import {
-  removeFieldInternalId,
-  replaceField,
-} from 'renderer/components/FrameContext/utils';
+import { removeFieldInternalId, replaceField } from '../../FrameContext/utils';
+import { Field, FrameFile } from '../../FrameContext/FrameContext.types';
 
 export const updateItem = (
-  prevField: Field,
-  nextField: Field,
-  workingFile: FrameFile,
-  toBottom?: boolean,
-  callback?: (file: FrameFile) => any
+    prevField: Field,
+    nextField: Field,
+    workingFile: FrameFile,
+    toBottom?: boolean,
+    callback?: (file: FrameFile) => any
 ) => {
-  if (!workingFile) {
-    return;
-  }
-
-  let sendableNodes = [...workingFile.contents];
-
-  if (prevField) {
-    sendableNodes = replaceField(sendableNodes, prevField, nextField);
-  } else {
-    if (toBottom) {
-      sendableNodes = [...sendableNodes, { ...nextField }];
-    } else {
-      sendableNodes = [{ ...nextField }, ...sendableNodes];
+    if (!workingFile) {
+        return;
     }
 
-    sendableNodes = removeFieldInternalId(sendableNodes);
-  }
+    let sendableNodes = [...workingFile.contents];
 
-  const newFile = {
-    ...workingFile,
-    contents: sendableNodes,
-  };
+    if (prevField) {
+        sendableNodes = replaceField(sendableNodes, prevField, nextField);
+    } else {
+        if (toBottom) {
+            sendableNodes = [...sendableNodes, { ...nextField }];
+        } else {
+            sendableNodes = [{ ...nextField }, ...sendableNodes];
+        }
 
-  callback?.(newFile);
+        sendableNodes = removeFieldInternalId(sendableNodes);
+    }
+
+    const newFile = {
+        ...workingFile,
+        contents: sendableNodes,
+    };
+
+    callback?.(newFile);
 };

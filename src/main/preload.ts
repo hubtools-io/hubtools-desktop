@@ -1,32 +1,57 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import {
+    DirectoryResponse,
+    HFile,
+    HFileResponse,
+} from '../renderer/components/FrameContext/FrameContext.types';
+
+type OpenFile = {
+    filePath: HFile['path'];
+};
+
+type SaveFile = {
+    filePath: HFile['path'];
+    contents: HFile['contents'];
+};
 
 const electronHandler = {
-  openDirectory: (args: any) => ipcRenderer.send('open-directory', args),
-  reloadDirectory: (args: any) => ipcRenderer.send('reload-directory', args),
-  getOpenDirectory: (callback: any) =>
-    ipcRenderer.on('get-open-directory', (event, data) => {
-      callback(data);
-    }),
-  watchDirectory: (callback: any) =>
-    ipcRenderer.on('watch-directory', (event, data) => {
-      callback(data);
-    }),
+    /* Directory Manager ------------------------------------------------- */
+    openDirectoryDialog: () => ipcRenderer.send('directory:open-dialog'),
+    directoryResponse: (callback: (data: DirectoryResponse) => void) =>
+        ipcRenderer.on('directory:response', (_event, data) => {
+            callback(data);
+        }),
 
-  openFile: (args: any) => ipcRenderer.send('open-file', args),
-  getOpenFile: (callback: any) =>
-    ipcRenderer.on('get-open-file', (event, data) => {
-      callback(data);
-    }),
+    /* File Manager ------------------------------------------------------ */
+    openFile: (args: OpenFile) => ipcRenderer.send('file:open', args),
+    fileResponse: (callback: (data: HFileResponse) => void) =>
+        ipcRenderer.on('file:response', (event, data) => {
+            callback(data);
+        }),
 
-  saveFile: (args: any) => ipcRenderer.send('save-file', args),
-  getSavedFile: (callback: any) =>
-    ipcRenderer.on('get-saved-file', (event, data) => {
-      callback(data);
-    }),
-  receiveMsg: (callback: any) =>
-    ipcRenderer.on('receive-msg', (event, data) => {
-      callback(data);
-    }),
+    saveFile: (args: SaveFile) => ipcRenderer.send('file:save', args),
+    saveFileResponse: (callback: (data: HFileResponse) => void) =>
+        ipcRenderer.on('file:save-response', (event, data) => {
+            callback(data);
+        }),
+
+    /* Message Manager --------------------------------------------------- */
+    receiveMsg: (callback: any) =>
+        ipcRenderer.on('message:receive', (event, data) => {
+            callback(data);
+        }),
+
+    // ----------------------
+    // ----------------------
+    // ----------------------
+    // ----------------------
+    // ----------------------
+    // ----------------------
+    reloadDirectory: (args: any) => ipcRenderer.send('reload-directory', args),
+    watchDirectory: (callback: any) =>
+        ipcRenderer.on('watch-directory', (event, data) => {
+            callback(data);
+        }),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

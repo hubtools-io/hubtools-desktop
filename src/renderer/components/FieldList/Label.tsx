@@ -1,18 +1,18 @@
 import type { FC } from 'react';
 
 export type LabelProps = {
-  label: string;
+    label: string;
 };
 
 export const Label: FC<LabelProps> = ({ label }) => (
-  <span
-    style={{
-      fontSize: 16,
-      fontWeight: 600,
-      marginRight: 10,
-      whiteSpace: 'nowrap',
-    }}
-  >
-    {label}
-  </span>
+    <span
+        style={{
+            fontSize: 16,
+            fontWeight: 600,
+            marginRight: 10,
+            whiteSpace: 'nowrap',
+        }}
+    >
+        {label}
+    </span>
 );

@@ -1,7 +1,11 @@
 module.exports = {
-  extends: 'erb',
+  extends: [
+    'erb',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
+  ],
   rules: {
-    // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
     'import/no-unresolved': 'error',
     'import/prefer-default-export': 'off',
@@ -18,11 +22,8 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-nested-ternary': 'off',
     'no-new': 'off',
-    // 'import/no-cycle': 'off',
-    // 'import/no-named-as-default': 'off',
-    // 'import/no-named-as-default-member': 'off',
+    'no-bitwise': 'off',
     'react/no-array-index-key': 'off',
-    // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
     'react/function-component-definition': 'off',
     'react/jsx-props-no-spreading': 'off',
@@ -52,7 +53,6 @@ module.exports = {
   },
   settings: {
     'import/resolver': {
-      // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
       node: {},
       webpack: {
         config: require.resolve('./.erb/configs/webpack.config.eslint.ts'),

@@ -1,18 +1,18 @@
 {
-  "name": "hubtools",
-  "version": "0.1.43",
-  "description": "A desktop app to help with HubSpot development",
-  "license": "MIT",
-  "author": {
-    "name": "HubTools.io",
-    "email": "hubtoolsio@gmail.com",
-    "url": "https://github.com/hubtools-io"
-  },
-  "main": "./dist/main/main.js",
-  "scripts": {
-    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
-    "postinstall": "npm run rebuild && npm run link-modules",
-    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
-  },
-  "dependencies": {}
+    "name": "hubtools",
+    "version": "0.1.44",
+    "description": "A desktop app to help with HubSpot development",
+    "license": "MIT",
+    "author": {
+        "name": "HubTools.io",
+        "email": "hubtoolsio@gmail.com",
+        "url": "https://github.com/hubtools-io"
+    },
+    "main": "./dist/main/main.js",
+    "scripts": {
+        "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+        "postinstall": "npm run rebuild && npm run link-modules",
+        "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+    },
+    "dependencies": {}
 }

@@ -1,263 +1,301 @@
 import noop from 'lodash/fp/noop';
 import {
-  createContext,
-  FC,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    FC,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
-import { FrameFile, NewFrameFile, Directory } from './FrameContext.types';
+import {
+    Directory,
+    DirectoryResponse,
+    HFile,
+    HFileResponse,
+    Message,
+} from './FrameContext.types';
 import { formatFieldString } from './utils';
 
 export interface FrameContextState {
-  message?: any;
+    message?: any;
 
-  directory?: Directory;
-  openDirectory: () => void;
-  closeDirectory: () => void;
+    directory?: Directory;
+    openDirectory: () => void;
 
-  directoryLoading?: boolean;
-  setDirectoryLoading?: (loading: boolean) => void;
+    directoryLoading?: boolean;
+    setDirectoryLoading?: (loading: boolean) => void;
 
-  frameFile?: FrameFile;
-  openFrameFile: (frameFile: NewFrameFile) => void;
-  removeFrameFile: () => void;
-  updateFrameFile: (frameFile: FrameFile) => void;
+    frameFile?: HFile;
+    openFrameFile: (frameFile: HFile) => void;
+    removeFrameFile: () => void;
+    updateFrameFile: (frameFile: HFile) => void;
 
-  unsavedFrameFile?: FrameFile;
-  updateUnsavedFrameFile: (frameFile: NewFrameFile) => void;
-  saveFrameFile: (frameFile: NewFrameFile) => void;
-  revertFrameFile: () => void;
+    unsavedFrameFile?: HFile;
+    saveFrameFile: (frameFile: HFile) => void;
+    revertFrameFile: () => void;
 }
 
 const initialState: FrameContextState = {
-  directory: undefined,
-  openDirectory: noop,
-  closeDirectory: noop,
+    directory: undefined,
+    openDirectory: noop,
 
-  directoryLoading: true,
-  setDirectoryLoading: noop,
+    directoryLoading: true,
+    setDirectoryLoading: noop,
 
-  frameFile: undefined,
-  openFrameFile: noop,
-  removeFrameFile: noop,
-  updateFrameFile: noop,
-  revertFrameFile: noop,
+    frameFile: undefined,
+    openFrameFile: noop,
+    removeFrameFile: noop,
+    updateFrameFile: noop,
+    revertFrameFile: noop,
 
-  unsavedFrameFile: undefined,
-  updateUnsavedFrameFile: noop,
-  saveFrameFile: noop,
+    unsavedFrameFile: undefined,
+    saveFrameFile: noop,
 };
 
 export const FrameContext = createContext(initialState);
 
 export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
-  const [dir, setDir] = useState<Directory>();
-  const [dirLoading, setDirLoading] = useState<boolean>(true);
-  const [file, setFile] = useState<FrameFile>();
-  const [dirChanged, setDirChanged] = useState<any>();
-  const [unsavedFile, setUnsavedFile] = useState<NewFrameFile | FrameFile>();
-  const [message, setMessage] = useState<string>('');
+    const [directory, setDirectory] = useState<Directory>();
+    const [directoryLoading, setDirectoryLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    window.electron.receiveMsg((data: any) => {
-      if (data) {
-        setMessage(data.text);
-      }
+    const [file, setFile] = useState<HFile>();
+    const [unsavedFile, setUnsavedFile] = useState<HFile>();
 
-      if (data.autoDismiss) {
-        setTimeout(() => {
-          setMessage('');
-        }, 5000);
-      }
-    });
-  }, [dir]);
+    const [message, setMessage] = useState<string>('');
 
-  useEffect(() => {
-    window.electron.getOpenDirectory((data: any) => {
-      if (data === 499) {
-        setDirLoading(false);
-      }
+    const [dirChanged, setDirChanged] = useState<any>();
 
-      if (
-        data &&
-        data.name !== undefined &&
-        data.name !== 'undefined' &&
-        data.path !== dir?.path
-      ) {
-        if (data.path !== dir?.path) {
-          setFile(undefined);
-          setUnsavedFile(undefined);
-          setDir(data);
-        } else {
-          setDir({ ...data });
+    /*
+     * MESSAGE MANAGER
+     * --------------------------------------------------------------------
+     */
+    useEffect(() => {
+        window.electron.receiveMsg((data: Message) => {
+            // If data has been returned, send text to UI
+            if (data) {
+                setMessage(data.text);
+            }
+
+            // If message can be auto dismissed,
+            // Dismiss message after 5 seconds.
+            if (data.autoDismiss) {
+                setTimeout(() => {
+                    setMessage('');
+                }, 5000);
+            }
+        });
+    }, []);
+
+    /*
+     * DIRECTORY MANAGER
+     * --------------------------------------------------------------------
+     */
+    useEffect(() => {
+        window.electron.directoryResponse((response: DirectoryResponse) => {
+            // If error, notify the UI
+            if (!!response.data.error && response.data.error.message) {
+                setMessage(response.data.error.message);
+                setDirectoryLoading(false);
+            }
+
+            // If returned directory is current directory
+            // refresh directory contents.
+            // Otherwise reset all open files.
+            if (response.data) {
+                const directoryData = { ...response.data.directory };
+
+                if (directoryData.path === directory?.path) {
+                    // TODO: We should first notify user
+                    // Ask if they want to save open files.
+                    setFile(undefined);
+                    setUnsavedFile(undefined);
+                    setDirectory({ ...directoryData });
+                } else {
+                    setDirectory({ ...directoryData });
+                }
+
+                setDirectoryLoading(false);
+            }
+        });
+    }, [directory]);
+
+    const openDirectory = useCallback(() => {
+        setDirectoryLoading(true);
+        window.electron.openDirectoryDialog();
+    }, []);
+
+    /*
+     * FILE MANAGER
+     * --------------------------------------------------------------------
+     */
+    useEffect(() => {
+        window.electron.fileResponse((response: HFileResponse) => {
+            // If error, notify the UI
+            if (!!response.data.error && response.data.error.message) {
+                setMessage(response.data.error.message);
+            }
+
+            // If file is returned, set active file
+            if (response.data) {
+                const fileData = { ...response.data.file };
+
+                setFile({ ...fileData });
+                setUnsavedFile({ ...fileData });
+            }
+        });
+    }, [directory]);
+
+    useEffect(() => {
+        window.electron.saveFileResponse((response: HFileResponse) => {
+            // If error, notify the UI
+            if (!!response.data.error && response.data.error.message) {
+                setMessage(response.data.error.message);
+            }
+
+            // If file is returned, set active file
+            if (response.data) {
+                const fileData = { ...response.data.file };
+
+                setFile({ ...fileData });
+                setUnsavedFile({ ...fileData });
+            }
+        });
+    }, [directory]);
+
+    const openFrameFile = useCallback((requestedFile: any) => {
+        if (requestedFile) {
+            // Reset file and unsaved file if opening new.
+            setFile(undefined);
+            setUnsavedFile(undefined);
+
+            // Send new file path to main process
+            window.electron.openFile({ filePath: `${requestedFile.path}` });
         }
-      }
-    });
-  }, [dir]);
+    }, []);
 
-  useEffect(() => {
-    window.electron.watchDirectory((dataWatch: any) => {
-      if (dataWatch && dir) {
-        if (
-          file &&
-          dataWatch.eventType === 'change' &&
-          dataWatch.file === file?.path
-        ) {
-          // TELL USER TO RELOAD ACTIVE FILE FOR RENAME
-          setDirChanged({
-            directory: dataWatch.directory,
-            file: dataWatch.file,
-          });
+    const removeFrameFile = useCallback(() => {
+        if (file || unsavedFile) {
+            setFile(undefined);
+            setUnsavedFile(undefined);
         }
+    }, [file, unsavedFile]);
 
-        if (dir && dataWatch.eventType === 'rename') {
-          // TELL USER TO RELOAD PANEL FOR RENAME
-
-          // eslint-disable-next-line no-console
-          console.log(dataWatch);
-          window.electron.reloadDirectory({ directory: `${dir?.path}` });
-        }
-      }
-    });
-  }, [dir, file]);
-
-  const openDirectory = useCallback(() => {
-    setDirLoading(true);
-    window.electron.openDirectory({ foo: 'bar' });
-  }, []);
-
-  const closeDirectory = useCallback(() => {
-    // eslint-disable-next-line no-console
-    console.log('close directory');
-  }, []);
-
-  const openFrameFile = useCallback((frameFile: NewFrameFile | FrameFile) => {
-    setFile(undefined);
-    setUnsavedFile(undefined);
-
-    setTimeout(() => {
-      window.electron.openFile({ file: `${frameFile.path}` });
-
-      window.electron.getOpenFile((data: any) => {
-        const newFile = {
-          ...frameFile,
-          id: `${frameFile.path}`,
-          contents: data || [],
-        };
-
-        setFile(newFile);
-        setUnsavedFile(newFile);
-      });
-    }, 10);
-  }, []);
-
-  useEffect(() => {
-    // File has been updated externally
-    // Need to update if it is the active viewing file
-    if (dir && file && dirChanged) {
-      const changedFilePath = `${dir.path}/${dirChanged.file}`;
-
-      if (dirChanged.file === file?.path) {
-        openFrameFile({ ...file });
-        setDirChanged(false);
-      }
-    }
-  }, [dirChanged, file, dir, openFrameFile]);
-
-  const removeFrameFile = useCallback(() => {
-    setFile(undefined);
-    setUnsavedFile(undefined);
-  }, [setFile, setUnsavedFile]);
-
-  const updateFrameFile = useCallback((frameFile: NewFrameFile | FrameFile) => {
-    setUnsavedFile(frameFile);
-  }, []);
-
-  const updateUnsavedFrameFile = useCallback(
-    (frameFile: NewFrameFile | FrameFile) => {
-      setUnsavedFile(frameFile);
-    },
-    [setUnsavedFile]
-  );
-
-  const saveFrameFile = useCallback((frameFile: NewFrameFile | FrameFile) => {
-    const formattedContents = formatFieldString(frameFile.contents);
-
-    window.electron.saveFile({
-      savePath: `${frameFile.path}`,
-      contents: frameFile.contents ? formattedContents : '',
-    });
-
-    window.electron.getSavedFile((data: any) => {
-      if (data === 200) {
-        setFile(frameFile);
+    const updateFrameFile = useCallback((frameFile: HFile) => {
         setUnsavedFile(frameFile);
-      }
-    });
-  }, []);
+    }, []);
 
-  const revertFrameFile = useCallback(() => {
-    setUnsavedFile(file);
-  }, [file]);
+    const saveFrameFile = useCallback((frameFile: HFile) => {
+        let contentsValue = frameFile.contents;
 
-  const ctx: FrameContextState = useMemo(
-    () => ({
-      message,
+        let arrType = '';
+        arrType = Array.isArray(frameFile.contents) ? 'array' : '';
+        arrType = arrType !== 'array' ? typeof frameFile.contents : arrType;
 
-      directory: dir,
-      openDirectory,
-      closeDirectory,
+        if (arrType === 'object' || arrType === 'array') {
+            contentsValue = JSON.stringify(frameFile.contents, null, 4);
+        }
 
-      directoryLoading: dirLoading,
-      setDirectoryLoading: setDirLoading,
+        window.electron.saveFile({
+            filePath: `${frameFile.path}`,
+            contents: contentsValue || '',
+        });
+    }, []);
 
-      frameFile: file,
-      openFrameFile,
-      removeFrameFile,
-      updateFrameFile,
+    const revertFrameFile = useCallback(() => {
+        setUnsavedFile(file);
+    }, [file]);
 
-      unsavedFrameFile: unsavedFile,
-      updateUnsavedFrameFile,
-      saveFrameFile,
-      revertFrameFile,
-    }),
-    [
-      message,
+    // useEffect(() => {
+    //   window.electron.watchDirectory((dataWatch: any) => {
+    //     if (dataWatch && dir) {
+    //       if (
+    //         file &&
+    //         dataWatch.eventType === 'change' &&
+    //         dataWatch.file === file?.path
+    //       ) {
+    //         // TELL USER TO RELOAD ACTIVE FILE FOR RENAME
+    //         setDirChanged({
+    //           directory: dataWatch.directory,
+    //           file: dataWatch.file,
+    //         });
+    //       }
 
-      dir,
-      openDirectory,
-      closeDirectory,
+    //       if (dir && dataWatch.eventType === 'rename') {
+    //         // TELL USER TO RELOAD PANEL FOR RENAME
 
-      dirLoading,
-      setDirLoading,
+    //         // eslint-disable-next-line no-console
+    //         console.log(dataWatch);
+    //         window.electron.reloadDirectory({ directory: `${dir?.path}` });
+    //       }
+    //     }
+    //   });
+    // }, [dir, file]);
 
-      file,
-      openFrameFile,
-      removeFrameFile,
-      updateFrameFile,
+    // useEffect(() => {
+    //   // File has been updated externally
+    //   // Need to update if it is the active viewing file
+    //   if (dir && file && dirChanged) {
+    //     const changedFilePath = `${dir.path}/${dirChanged.file}`;
 
-      unsavedFile,
-      updateUnsavedFrameFile,
-      saveFrameFile,
-      revertFrameFile,
-    ]
-  );
+    //     if (dirChanged.file === file?.path) {
+    //       openFrameFile({ ...file });
+    //       setDirChanged(false);
+    //     }
+    //   }
+    // }, [dirChanged, file, dir, openFrameFile]);
 
-  return <FrameContext.Provider value={ctx} {...props} />;
+    const ctx: FrameContextState = useMemo(
+        () => ({
+            message,
+
+            directory,
+            openDirectory,
+
+            directoryLoading,
+            setDirectoryLoading,
+
+            frameFile: file,
+            openFrameFile,
+            removeFrameFile,
+            updateFrameFile,
+
+            unsavedFrameFile: unsavedFile,
+            saveFrameFile,
+            revertFrameFile,
+        }),
+        [
+            message,
+
+            directory,
+            openDirectory,
+
+            directoryLoading,
+            setDirectoryLoading,
+
+            file,
+            openFrameFile,
+            removeFrameFile,
+            updateFrameFile,
+
+            unsavedFile,
+            saveFrameFile,
+            revertFrameFile,
+        ]
+    );
+
+    return <FrameContext.Provider value={ctx} {...props} />;
 };
 
 export const useFrame = () => {
-  const context = useContext(FrameContext);
+    const context = useContext(FrameContext);
 
-  if (!context) {
-    throw new Error('useFrame requires a FrameProvider');
-  }
+    if (!context) {
+        throw new Error('useFrame requires a FrameProvider');
+    }
 
-  return context;
+    return context;
 };
 
 export default FrameContextProvider;

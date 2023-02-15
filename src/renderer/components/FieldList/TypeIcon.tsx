@@ -75,204 +75,204 @@ import { defaultVideo } from '../FrameContext/defaultFields/video';
 export const typeIconSize = 24;
 
 export const typeIconLookup = {
-  alignment: <AlignHorizontalLeftIcon size={typeIconSize} />,
-  backgroundimage: <ImageSizeSelectActualIcon size={typeIconSize} />,
-  boolean: <ToggleSwitchOffOutlineIcon size={typeIconSize} />,
-  border: <BorderStyleIcon size={typeIconSize} />,
-  blog: <PostOutlineIcon size={typeIconSize} />,
-  choice: <CheckboxMultipleOutlineIcon size={typeIconSize} />,
-  color: <PaletteIcon size={typeIconSize} />,
-  crmobject: <FocusFieldHorizontalIcon size={typeIconSize} />,
-  crmobjectproperty: <FocusFieldHorizontalIcon size={typeIconSize} />,
-  cta: <CursorDefaultClickOutlineIcon size={typeIconSize} />,
-  date: <CalendarBlankIcon size={typeIconSize} />,
-  datetime: <CalendarClockIcon size={typeIconSize} />,
-  email: <EmailOutlineIcon size={typeIconSize} />,
-  embed: <CodeBracesIcon size={typeIconSize} />,
-  file: <FileOutlineIcon size={typeIconSize} />,
-  followupemail: <EmailArrowRightOutlineIcon size={typeIconSize} />,
-  font: <FormatSizeIcon size={typeIconSize} />,
-  form: <FormSelectIcon size={typeIconSize} />,
-  gradient: <GradientHorizontalIcon size={typeIconSize} />,
-  group: <GroupIcon size={typeIconSize} />,
-  groupstyletab: <GroupIcon size={typeIconSize} />,
-  hubdbrow: <TableRowIcon size={typeIconSize} />,
-  hubdbtable: <TableIcon size={typeIconSize} />,
-  icon: <AlphaIIcon size={typeIconSize} />,
-  image: <ImageOutlineIcon size={typeIconSize} />,
-  link: <LinkIcon size={typeIconSize} />,
-  logo: <AsteriskCircleOutlineIcon size={typeIconSize} />,
-  menu: <MenuIcon size={typeIconSize} />,
-  number: <Numeric1BoxIcon size={typeIconSize} />,
-  page: <PageLayoutBodyIcon size={typeIconSize} />,
-  richtext: <ImageTextIcon size={typeIconSize} />,
-  simplemenu: <MenuIcon size={typeIconSize} />,
-  spacing: <FormatParagraphSpacingIcon size={typeIconSize} />,
-  tag: <TagOutlineIcon size={typeIconSize} />,
-  text: <TextLongIcon size={typeIconSize} />,
-  textalignment: <FormatAlignLeftIcon size={typeIconSize} />,
-  url: <LinkVariantIcon size={typeIconSize} />,
-  videoplayer: <VideoOutlineIcon size={typeIconSize} />,
+    alignment: <AlignHorizontalLeftIcon size={typeIconSize} />,
+    backgroundimage: <ImageSizeSelectActualIcon size={typeIconSize} />,
+    boolean: <ToggleSwitchOffOutlineIcon size={typeIconSize} />,
+    border: <BorderStyleIcon size={typeIconSize} />,
+    blog: <PostOutlineIcon size={typeIconSize} />,
+    choice: <CheckboxMultipleOutlineIcon size={typeIconSize} />,
+    color: <PaletteIcon size={typeIconSize} />,
+    crmobject: <FocusFieldHorizontalIcon size={typeIconSize} />,
+    crmobjectproperty: <FocusFieldHorizontalIcon size={typeIconSize} />,
+    cta: <CursorDefaultClickOutlineIcon size={typeIconSize} />,
+    date: <CalendarBlankIcon size={typeIconSize} />,
+    datetime: <CalendarClockIcon size={typeIconSize} />,
+    email: <EmailOutlineIcon size={typeIconSize} />,
+    embed: <CodeBracesIcon size={typeIconSize} />,
+    file: <FileOutlineIcon size={typeIconSize} />,
+    followupemail: <EmailArrowRightOutlineIcon size={typeIconSize} />,
+    font: <FormatSizeIcon size={typeIconSize} />,
+    form: <FormSelectIcon size={typeIconSize} />,
+    gradient: <GradientHorizontalIcon size={typeIconSize} />,
+    group: <GroupIcon size={typeIconSize} />,
+    groupstyletab: <GroupIcon size={typeIconSize} />,
+    hubdbrow: <TableRowIcon size={typeIconSize} />,
+    hubdbtable: <TableIcon size={typeIconSize} />,
+    icon: <AlphaIIcon size={typeIconSize} />,
+    image: <ImageOutlineIcon size={typeIconSize} />,
+    link: <LinkIcon size={typeIconSize} />,
+    logo: <AsteriskCircleOutlineIcon size={typeIconSize} />,
+    menu: <MenuIcon size={typeIconSize} />,
+    number: <Numeric1BoxIcon size={typeIconSize} />,
+    page: <PageLayoutBodyIcon size={typeIconSize} />,
+    richtext: <ImageTextIcon size={typeIconSize} />,
+    simplemenu: <MenuIcon size={typeIconSize} />,
+    spacing: <FormatParagraphSpacingIcon size={typeIconSize} />,
+    tag: <TagOutlineIcon size={typeIconSize} />,
+    text: <TextLongIcon size={typeIconSize} />,
+    textalignment: <FormatAlignLeftIcon size={typeIconSize} />,
+    url: <LinkVariantIcon size={typeIconSize} />,
+    videoplayer: <VideoOutlineIcon size={typeIconSize} />,
 
-  // ...
-  payment: <CreditCardOutlineIcon size={typeIconSize} />,
+    // ...
+    payment: <CreditCardOutlineIcon size={typeIconSize} />,
 };
 
 export const fieldsChoices = {
-  group: {
-    label: 'Group',
-    default: defaultGroup,
-  },
-  groupstyletab: {
-    label: 'Style Group',
-    default: {
-      ...defaultGroup,
-      label: 'Default Style Group',
-      tab: 'STYLE',
+    group: {
+        label: 'Group',
+        default: defaultGroup,
     },
-  },
-  alignment: {
-    label: 'Alignment',
-    default: defaultAlignment,
-  },
-  backgroundimage: {
-    label: 'Background Image',
-    default: defaultBackgroundImage,
-  },
-  blog: {
-    label: 'Blog',
-    default: defaultBlog,
-  },
-  boolean: {
-    label: 'Boolean',
-    default: defaultBoolean,
-  },
-  border: {
-    label: 'Border',
-    default: defaultBorder,
-  },
-  choice: {
-    label: 'Choice',
-    default: defaultChoice,
-  },
-  color: {
-    label: 'Color',
-    default: defaultColor,
-  },
-  cta: {
-    label: 'CTA',
-    default: defaultCTA,
-  },
-  crmobject: {
-    label: 'CRM Object',
-    default: defaultCRMObject,
-  },
-  crmobjectproperty: {
-    label: 'CRM Object Property',
-    default: defaultCRMObjectProperty,
-  },
-  date: {
-    label: 'Date',
-    default: defaultDate,
-  },
-  datetime: {
-    label: 'DateTime',
-    default: defaultDateTime,
-  },
-  email: {
-    label: 'Email',
-    default: defaultEmail,
-  },
-  embed: {
-    label: 'Embed',
-    default: defaultEmbed,
-  },
-  file: {
-    label: 'File',
-    default: defaultFile,
-  },
-  followupemail: {
-    label: 'Followup Email',
-    default: defaultFollowupEmail,
-  },
-  font: {
-    label: 'Font',
-    default: defaultFont,
-  },
-  form: {
-    label: 'Form',
-    default: defaultForm,
-  },
-  gradient: {
-    label: 'Gradient',
-    default: defaultGradient,
-  },
-  hubdbrow: {
-    label: 'HubDB Row',
-    default: defaultHubDBRow,
-  },
-  hubdbtable: {
-    label: 'HubDB Table',
-    default: defaultHubDBTable,
-  },
-  icon: {
-    label: 'Icon',
-    default: defaultIcon,
-  },
-  image: {
-    label: 'Image',
-    default: defaultImage,
-  },
-  link: {
-    label: 'Link',
-    default: defaultLink,
-  },
-  logo: {
-    label: 'Logo',
-    default: defaultLogo,
-  },
-  menu: {
-    label: 'Menu',
-    default: defaultMenu,
-  },
-  number: {
-    label: 'Number',
-    default: defaultNumber,
-  },
-  page: {
-    label: 'Page',
-    default: defaultPage,
-  },
-  richtext: {
-    label: 'RichText',
-    default: defaultRichText,
-  },
-  simplemenu: {
-    label: 'Simple Menu',
-    default: defaultSimpleMenu,
-  },
-  spacing: {
-    label: 'Spacing',
-    default: defaultSpacing,
-  },
-  tag: {
-    label: 'Tag',
-    default: defaultTag,
-  },
-  text: {
-    label: 'Text',
-    default: defaultText,
-  },
-  textalignment: {
-    label: 'Text Alignment',
-    default: defaultTextAlignment,
-  },
-  url: {
-    label: 'Url',
-    default: defaultUrl,
-  },
-  videoplayer: {
-    label: 'Video',
-    default: defaultVideo,
-  },
+    groupstyletab: {
+        label: 'Style Group',
+        default: {
+            ...defaultGroup,
+            label: 'Default Style Group',
+            tab: 'STYLE',
+        },
+    },
+    alignment: {
+        label: 'Alignment',
+        default: defaultAlignment,
+    },
+    backgroundimage: {
+        label: 'Background Image',
+        default: defaultBackgroundImage,
+    },
+    blog: {
+        label: 'Blog',
+        default: defaultBlog,
+    },
+    boolean: {
+        label: 'Boolean',
+        default: defaultBoolean,
+    },
+    border: {
+        label: 'Border',
+        default: defaultBorder,
+    },
+    choice: {
+        label: 'Choice',
+        default: defaultChoice,
+    },
+    color: {
+        label: 'Color',
+        default: defaultColor,
+    },
+    cta: {
+        label: 'CTA',
+        default: defaultCTA,
+    },
+    crmobject: {
+        label: 'CRM Object',
+        default: defaultCRMObject,
+    },
+    crmobjectproperty: {
+        label: 'CRM Object Property',
+        default: defaultCRMObjectProperty,
+    },
+    date: {
+        label: 'Date',
+        default: defaultDate,
+    },
+    datetime: {
+        label: 'DateTime',
+        default: defaultDateTime,
+    },
+    email: {
+        label: 'Email',
+        default: defaultEmail,
+    },
+    embed: {
+        label: 'Embed',
+        default: defaultEmbed,
+    },
+    file: {
+        label: 'File',
+        default: defaultFile,
+    },
+    followupemail: {
+        label: 'Followup Email',
+        default: defaultFollowupEmail,
+    },
+    font: {
+        label: 'Font',
+        default: defaultFont,
+    },
+    form: {
+        label: 'Form',
+        default: defaultForm,
+    },
+    gradient: {
+        label: 'Gradient',
+        default: defaultGradient,
+    },
+    hubdbrow: {
+        label: 'HubDB Row',
+        default: defaultHubDBRow,
+    },
+    hubdbtable: {
+        label: 'HubDB Table',
+        default: defaultHubDBTable,
+    },
+    icon: {
+        label: 'Icon',
+        default: defaultIcon,
+    },
+    image: {
+        label: 'Image',
+        default: defaultImage,
+    },
+    link: {
+        label: 'Link',
+        default: defaultLink,
+    },
+    logo: {
+        label: 'Logo',
+        default: defaultLogo,
+    },
+    menu: {
+        label: 'Menu',
+        default: defaultMenu,
+    },
+    number: {
+        label: 'Number',
+        default: defaultNumber,
+    },
+    page: {
+        label: 'Page',
+        default: defaultPage,
+    },
+    richtext: {
+        label: 'RichText',
+        default: defaultRichText,
+    },
+    simplemenu: {
+        label: 'Simple Menu',
+        default: defaultSimpleMenu,
+    },
+    spacing: {
+        label: 'Spacing',
+        default: defaultSpacing,
+    },
+    tag: {
+        label: 'Tag',
+        default: defaultTag,
+    },
+    text: {
+        label: 'Text',
+        default: defaultText,
+    },
+    textalignment: {
+        label: 'Text Alignment',
+        default: defaultTextAlignment,
+    },
+    url: {
+        label: 'Url',
+        default: defaultUrl,
+    },
+    videoplayer: {
+        label: 'Video',
+        default: defaultVideo,
+    },
 };
