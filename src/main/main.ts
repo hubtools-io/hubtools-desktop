@@ -7,13 +7,13 @@ import {
     ipcMain,
     Rectangle,
 } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 import chokidar, { FSWatcher } from 'chokidar';
 import log from 'electron-log';
 import Store from 'electron-store';
+import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
