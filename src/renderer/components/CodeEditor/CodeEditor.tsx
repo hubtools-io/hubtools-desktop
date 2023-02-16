@@ -215,7 +215,9 @@ export const CodeEditor: FC<CodeEditorProps> = ({
         onValid?.(editorValid);
     }, [onValid, editorValid]);
 
-    const handleEditorDidMount = () => {};
+    const handleEditorDidMount = (editor: any) => {
+        editorRef.current = editor;
+    };
 
     // Once the editor changes, we need to send a change event.
     // This will update the unsaved version of the file.
