@@ -1,461 +1,52 @@
-import { FC, HTMLProps, useEffect, useRef, useState } from 'react';
+import { FC, HTMLProps, useCallback, useEffect, useRef, useState } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { FrameFile } from '../FrameContext/FrameContext.types';
-import { formatFieldString, hubId, isValidJson } from '../FrameContext/utils';
-import { defaultBoolean } from '../FrameContext/defaultFields/boolean';
-import { defaultGroup } from '../FrameContext/defaultFields/group';
-import { defaultAlignment } from '../FrameContext/defaultFields';
-import { defaultBackgroundImage } from '../FrameContext/defaultFields/backgroundimage';
-import { defaultBlog } from '../FrameContext/defaultFields/blog';
-import { defaultBorder } from '../FrameContext/defaultFields/border';
-import { defaultColor } from '../FrameContext/defaultFields/color';
-import { defaultChoice } from '../FrameContext/defaultFields/choice';
-import { defaultCTA } from '../FrameContext/defaultFields/cta';
-import { defaultCRMObject } from '../FrameContext/defaultFields/crmobject';
-import { defaultCRMObjectProperty } from '../FrameContext/defaultFields/crmobjectproperty';
-import { defaultDate } from '../FrameContext/defaultFields/date';
-import { defaultDateTime } from '../FrameContext/defaultFields/datetime';
-import { defaultEmail } from '../FrameContext/defaultFields/email';
-import { defaultEmbed } from '../FrameContext/defaultFields/embed';
-import { defaultFile } from '../FrameContext/defaultFields/file';
-import { defaultFollowupEmail } from '../FrameContext/defaultFields/followupemail';
-import { defaultFont } from '../FrameContext/defaultFields/font';
-import { defaultForm } from '../FrameContext/defaultFields/form';
-import { defaultGradient } from '../FrameContext/defaultFields/gradient';
-import { defaultHubDBRow } from '../FrameContext/defaultFields/hubdbrow';
-import { defaultHubDBTable } from '../FrameContext/defaultFields/hubdbtable';
-import { defaultIcon } from '../FrameContext/defaultFields/icon';
-import { defaultImage } from '../FrameContext/defaultFields/image';
-import { defaultLink } from '../FrameContext/defaultFields/link';
-import { defaultLogo } from '../FrameContext/defaultFields/logo';
-import { defaultNumber } from '../FrameContext/defaultFields/number';
-import { defaultPage } from '../FrameContext/defaultFields/page';
-import { defaultRichText } from '../FrameContext/defaultFields/richtext';
-import { defaultSimpleMenu } from '../FrameContext/defaultFields/simplemenu';
-import { defaultSpacing } from '../FrameContext/defaultFields/spacing';
-import { defaultTag } from '../FrameContext/defaultFields/tag';
-import { defaultText } from '../FrameContext/defaultFields/text';
-import { defaultTextAlignment } from '../FrameContext/defaultFields/textalignment';
-import { defaultUrl } from '../FrameContext/defaultFields/url';
-import { defaultVideo } from '../FrameContext/defaultFields/video';
+import { isValidJson } from '../FrameContext/utils';
+import { fieldCompletionItems } from './utils/field-completion-items';
+import { fileTypeLookup } from './utils/file-type-lookup';
 
-function createDependencyProposals(range: any, monaco: any) {
-    const nameSuffix = hubId();
-    return [
-        {
-            label: '"group"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The group field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultGroup,
-                name: `${defaultGroup.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"groupstyletab"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The group with style tab field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultGroup,
-                name: `${defaultGroup.name}_${nameSuffix}`,
-                label: 'Default Style Group',
-                tab: 'STYLE',
-            })},`,
-            range,
-        },
-        {
-            label: '"alignment"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The alignment field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultAlignment,
-                name: `${defaultAlignment.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"backgroundimage"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The backgroundimage field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultBackgroundImage,
-                name: `${defaultBackgroundImage.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"blog"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The blog field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultBlog,
-                name: `${defaultBlog.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"boolean"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The boolean field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultBoolean,
-                name: `${defaultBoolean.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"border"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The border field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultBorder,
-                name: `${defaultBorder.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"choice"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The choice field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultChoice,
-                name: `${defaultChoice.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"color"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The color field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultColor,
-                name: `${defaultColor.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"cta"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The CTA field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultCTA,
-                name: `${defaultCTA.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"crmobject"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The CRM Object field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultCRMObject,
-                name: `${defaultCRMObject.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"crmobjectproperty"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The CRM Object Property field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultCRMObjectProperty,
-                name: `${defaultCRMObjectProperty.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"date"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The date field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultDate,
-                name: `${defaultDate.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"datetime"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The datetime field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultDateTime,
-                name: `${defaultDateTime.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"email"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultEmail,
-                name: `${defaultEmail.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"embed"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The embed field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultEmbed,
-                name: `${defaultEmbed.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"file"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation: 'The file field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultFile,
-                name: `${defaultFile.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"followupemail"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The followup email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultFollowupEmail,
-                name: `${defaultFollowupEmail.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"font"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The font email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultFont,
-                name: `${defaultFont.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"form"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The form email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultForm,
-                name: `${defaultForm.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"gradient"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The gradient email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultGradient,
-                name: `${defaultGradient.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"hubdbrow"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The hubdbrow email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultHubDBRow,
-                name: `${defaultHubDBRow.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"hubdbtable"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The hubdbtable email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultHubDBTable,
-                name: `${defaultHubDBTable.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"icon"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The icon email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultIcon,
-                name: `${defaultIcon.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"image"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The image email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultImage,
-                name: `${defaultImage.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"link"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The link email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultLink,
-                name: `${defaultLink.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"logo"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The logo email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultLogo,
-                name: `${defaultLogo.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"number"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The number email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultNumber,
-                name: `${defaultNumber.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"page"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The page email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultPage,
-                name: `${defaultPage.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"richtext"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The richtext email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultRichText,
-                name: `${defaultRichText.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"simplemenu"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The simplemenu email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultSimpleMenu,
-                name: `${defaultSimpleMenu.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"spacing"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The spacing email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultSpacing,
-                name: `${defaultSpacing.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"tag"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The tag email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultTag,
-                name: `${defaultTag.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"text"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The text email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultText,
-                name: `${defaultText.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"textalignment"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The textalignment email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultTextAlignment,
-                name: `${defaultTextAlignment.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"url"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The url email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultUrl,
-                name: `${defaultUrl.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-        {
-            label: '"videoplayer"',
-            kind: monaco.languages.CompletionItemKind.Function,
-            documentation:
-                'The videoplayer email field for hubspot modules and themes.',
-            insertText: `${formatFieldString({
-                ...defaultVideo,
-                name: `${defaultVideo.name}_${nameSuffix}`,
-            })},`,
-            range,
-        },
-    ];
-}
+const editorOptions = {
+    autoIndent: 'full',
+    automaticLayout: true,
+    colorDecorators: true,
+    fontSize: 14,
+    formatOnPaste: true,
+    formatOnType: true,
+    indentSize: 4,
+    minimap: {
+        enabled: true,
+    },
+    renderFinalNewline: 'on',
+    suggest: {
+        snippetsPreventQuickSuggestions: false,
+    },
+    tabSize: 4,
+    quickSuggestions: {
+        other: 'inline',
+        comments: true,
+        strings: true,
+    },
+    wordWrap: 'off',
+};
 
 export type CodeEditorProps = HTMLProps<HTMLDivElement> & {
     file?: FrameFile;
+    format?: boolean;
     onEdited?: (editState: boolean) => void;
-    onValid?: (validState: boolean) => void;
     onFileChange?: (file: FrameFile) => void;
-    onFileSave?: () => void;
+    onFileSave?: (file: FrameFile) => void;
+    onFormatted?: () => void;
+    onValid?: (validState: boolean) => void;
 };
 
 export const CodeEditor: FC<CodeEditorProps> = ({
     file,
+    format = false,
     onEdited,
     onFileChange,
-    onValid,
     onFileSave,
+    onFormatted,
+    onValid,
     ...props
 }) => {
     const editorRef = useRef(null);
@@ -464,21 +55,100 @@ export const CodeEditor: FC<CodeEditorProps> = ({
     const [loadingEditor, setLoadingEditor] = useState<boolean>(true);
     const [editorValid, setEditorValid] = useState<boolean>(true);
 
+    // Allows to manually trigger format editor.
+    const formatDocument = (editor: any) => {
+        editor.getAction('editor.action.formatDocument').run();
+    };
+
+    // Save file (as final or unsaved version)
+    const saveFile = useCallback(
+        (editor: any, value: any, type: string, checkIfEdited: boolean) => {
+            // Manually trigger monaco editor to format.
+            formatDocument(editor);
+
+            let isValid = true;
+            let isEdited = false;
+
+            // We only check to see if file was edited for type "change"
+            // If it is edited, we trigger onEdited event.
+            if (checkIfEdited) {
+                isEdited = value !== file?.contents;
+                onEdited?.(isEdited);
+            } else {
+                isEdited = true;
+            }
+
+            if (isEdited) {
+                // If file extension is json,
+                // We check to see if contents are valid JSON.
+                // We prevent saving if contents are invalid.
+                if (file?.extension === 'json') {
+                    isValid = isValidJson(value);
+                    setEditorValid(isValid);
+                }
+
+                if (isValid) {
+                    // If valid we continue to submit final action
+                    // If 'save', we save contents to the final saved version.
+                    if (type === 'save') {
+                        onFileSave?.({
+                            ...file,
+                            contents: value,
+                        });
+                    }
+
+                    // If 'change', we save contents to the unsaved version.
+                    if (type === 'change') {
+                        onFileChange?.({
+                            ...file,
+                            contents: value,
+                        });
+                    }
+                } else {
+                    // If invalid, we do not perform final action.
+                    // We send back to Dashboard that file is invalid.
+                    setEditorValid(false);
+                }
+            }
+        },
+        [file, onFileSave, onEdited, onFileChange]
+    );
+
+    // Buttons outside of this component can trigger to format the code.
+    // If an external component requests formatting, format will be true.
+    // We trigger formatting and respond that it was formatted.
+    useEffect(() => {
+        if (format === true && editorRef && editorRef.current) {
+            const zEditor = editorRef.current as any;
+            formatDocument(zEditor);
+            onFormatted?.();
+        } else {
+            onFormatted?.();
+        }
+    }, [format, onFormatted]);
+
+    // On initial component load, we setup the editor
     useEffect(() => {
         setTimeout(() => {
             if (editorRef && editorRef.current) {
                 const zEditor = editorRef.current as any;
-                zEditor.getAction('editor.action.formatDocument').run();
 
-                if (monaco) {
+                if (monaco && zEditor) {
                     const model = zEditor.getModel();
-                    model.setEOL(monaco.editor.EndOfLineSequence.LF);
-                    model.updateOptions({ tabSize: 4 });
 
+                    // We trigger to update options to those we expect.
+                    if (model) {
+                        model.setEOL(monaco.editor.EndOfLineSequence.LF);
+                        model.updateOptions({ ...editorOptions });
+                    }
+
+                    // We also attach keyboard bindings here.
+                    // This adds the command ctrl+s, cmd+s to save file.
                     zEditor.addCommand(
                         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-                        function () {
-                            onFileSave?.();
+                        () => {
+                            const value = model.getValue();
+                            return saveFile(zEditor, value, 'save', false);
                         }
                     );
                 }
@@ -486,23 +156,20 @@ export const CodeEditor: FC<CodeEditorProps> = ({
         }, 300);
 
         setTimeout(() => {
+            // After setup, we set the editor as loaded.
             setLoadingEditor(false);
         }, 310);
-    }, [monaco, onFileSave]);
+    }, [monaco, saveFile]);
 
+    // On initial load and editor initialization, we setup editor extensions.
     useEffect(() => {
         let defaults: any;
         let completionItemProvider: any;
 
         if (monaco && file?.extension === 'json') {
-            defaults = monaco.languages.json.jsonDefaults.setDiagnosticsOptions(
-                {
-                    ...monaco.languages.json.jsonDefaults.diagnosticsOptions,
-                    tabSize: 4,
-                }
-            );
-
             if (file.name === 'fields.json') {
+                // If file is HubSpot's fields.json,
+                // We add suggestions for field completion items.
                 completionItemProvider =
                     monaco.languages.registerCompletionItemProvider('json', {
                         provideCompletionItems(model: any, position: any) {
@@ -524,7 +191,7 @@ export const CodeEditor: FC<CodeEditorProps> = ({
                                 endColumn: word.endColumn,
                             };
                             return {
-                                suggestions: createDependencyProposals(
+                                suggestions: fieldCompletionItems(
                                     range,
                                     monaco
                                 ),
@@ -534,76 +201,38 @@ export const CodeEditor: FC<CodeEditorProps> = ({
             }
         }
 
+        // We dispose of these suggestions.
+        // Not doing this causes suggestions to be shown as duplicates.
         return () => {
             defaults?.dispose();
             completionItemProvider?.dispose();
         };
     }, [monaco, file]);
 
+    // Everytime we update editorValid
+    // We need to send the valid state back to Dashboard
     useEffect(() => {
         onValid?.(editorValid);
     }, [onValid, editorValid]);
 
-    const handleEditorDidMount = (editor: any) => {
-        setLoadingEditor(true);
+    const handleEditorDidMount = () => {};
 
-        editorRef.current = editor;
-        if (editor) {
-            setTimeout(() => {
-                editor.getAction('editor.action.formatDocument').run();
-            }, 300);
-
-            setTimeout(() => {
-                setLoadingEditor(false);
-            }, 310);
-        }
+    // Once the editor changes, we need to send a change event.
+    // This will update the unsaved version of the file.
+    // Updating the unsaved version allows us to change to field
+    // editor with same file contents.
+    const handleEditorChange = (value: any, _event: any) => {
+        const zEditor = editorRef.current as any;
+        return saveFile(zEditor, value, 'change', true);
     };
 
-    const handleEditorChange = (value: any, event: any) => {
-        let isValid = true;
-
-        // HubTools editor is removing trailing spaces and final newline.
-        // TODO: Investigate further.
-        const isEdited = value !== file?.contents;
-        onEdited?.(isEdited);
-
-        if (isEdited) {
-            if (file?.extension === 'json') {
-                isValid = isValidJson(value);
-                setEditorValid(isValid);
-            }
-
-            if (isValid) {
-                if (editorRef && editorRef.current) {
-                    const zEditor = editorRef.current as any;
-                    zEditor.getAction('editor.action.formatDocument').run();
-                }
-
-                onFileChange?.({ ...file, contents: value });
-            } else {
-                setEditorValid(false);
-            }
-        }
-    };
-
+    // We only mark editor as invalid, and prevent saving if
+    // errors are actual errors, not warnings.
     const handleEditorValidation = (markers: any) => {
         // Marker Severity
         // Hint = 1, Info = 2, Warning = 4, Error = 8,
         const errorMarkers = markers.filter((m: any) => m.severity > 4);
         setEditorValid(errorMarkers.length === 0);
-    };
-
-    const fileTypeLookup: Record<string, string> = {
-        css: 'css',
-        js: 'javascript',
-        json: 'json',
-        md: 'markdown',
-        mjs: 'javascript',
-        php: 'php',
-        sass: 'sass',
-        scss: 'scss',
-        ts: 'typescript',
-        yml: 'yml',
     };
 
     if (!file) {
@@ -652,28 +281,7 @@ export const CodeEditor: FC<CodeEditorProps> = ({
                     }
                     value={`${file?.contents}`}
                     saveViewState
-                    options={{
-                        renderFinalNewline: false,
-                        suggest: {
-                            snippetsPreventQuickSuggestions: false,
-                        },
-                        quickSuggestions: {
-                            other: 'inline',
-                            comments: true,
-                            strings: true,
-                        },
-                        autoIndent: 'full',
-                        automaticLayout: true,
-                        colorDecorators: true,
-                        minimap: {
-                            enabled: true,
-                        },
-                        wordWrap: 'on',
-                        formatOnPaste: true,
-                        formatOnType: true,
-                        fontSize: 14,
-                        tabSize: 4,
-                    }}
+                    options={{ ...editorOptions }}
                     onChange={handleEditorChange}
                     onMount={handleEditorDidMount}
                     onValidate={handleEditorValidation}

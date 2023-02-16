@@ -104,7 +104,7 @@ ipcMain.on('directory:open-dialog', (event: any) => {
         return;
     }
 
-    const dialogTitle = 'Open HubSpot CMS Theme';
+    const dialogTitle = 'Open HubSpot Project';
     sendMessage('Select a directory from the dialog.', false);
 
     dialog
@@ -120,14 +120,6 @@ ipcMain.on('directory:open-dialog', (event: any) => {
 
             if (result.canceled || result.filePaths.length === 0) {
                 sendMessage('', false);
-                event.sender.send('directory:response', {
-                    data: {
-                        error: {
-                            message: 'User canceled directory selection.',
-                            code: 499,
-                        },
-                    },
-                });
             } else {
                 const ignoreSubdirectories = [
                     '**/node_modules/**',

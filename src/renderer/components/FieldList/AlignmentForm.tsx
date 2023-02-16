@@ -76,7 +76,6 @@ export const AlignmentForm: FC<AlignmentFormProps> = ({
               }
             : { ...defaultValues };
     }, [defaultValues, editingField]) as AlignmentField;
-    console.log(initialValues.visibility?.controlling_field, 'initialValues');
 
     const {
         control,

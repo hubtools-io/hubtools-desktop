@@ -1,7 +1,7 @@
 import { get as lsGet, set as lsSet } from 'local-storage';
 import { cloneElement, FC, HTMLProps, useEffect, useState } from 'react';
 import PlusIcon from 'mdi-react/PlusIcon';
-import { cloneDeep } from 'lodash';
+import { clone, cloneDeep } from 'lodash';
 import ArrowExpandVerticalIcon from 'mdi-react/ArrowExpandVerticalIcon';
 import ArrowCollapseVerticalIcon from 'mdi-react/ArrowCollapseVerticalIcon';
 import { DragDropContext } from 'react-beautiful-dnd';
@@ -117,7 +117,11 @@ export const FieldList: FC<FieldListProps> = ({
         }
 
         return copyItem(field, workingFile, (updatedFile) => {
-            onUpdateFile?.(updatedFile);
+            const nextFile = clone(updatedFile);
+            onUpdateFile?.({
+                ...nextFile,
+                contents: JSON.stringify(nextFile.contents, null, 4),
+            });
         });
     };
 
@@ -128,7 +132,11 @@ export const FieldList: FC<FieldListProps> = ({
 
         return moveItemUp(field, workingFile, moveLevels, (updatedFile) => {
             setEditingField(undefined);
-            onUpdateFile?.(updatedFile);
+            const nextFile = clone(updatedFile);
+            onUpdateFile?.({
+                ...nextFile,
+                contents: JSON.stringify(nextFile.contents, null, 4),
+            });
         });
     };
 
@@ -139,7 +147,11 @@ export const FieldList: FC<FieldListProps> = ({
 
         return moveItemDown(field, workingFile, (updatedFile) => {
             setEditingField(undefined);
-            onUpdateFile?.(updatedFile);
+            const nextFile = clone(updatedFile);
+            onUpdateFile?.({
+                ...nextFile,
+                contents: JSON.stringify(nextFile.contents, null, 4),
+            });
         });
     };
 
@@ -153,7 +165,11 @@ export const FieldList: FC<FieldListProps> = ({
                 setEditingField(undefined);
             }
 
-            onUpdateFile?.(updatedFile);
+            const nextFile = clone(updatedFile);
+            onUpdateFile?.({
+                ...nextFile,
+                contents: JSON.stringify(nextFile.contents, null, 4),
+            });
         });
     };
 
@@ -168,7 +184,11 @@ export const FieldList: FC<FieldListProps> = ({
             workingFile,
             toBottom,
             (updatedFile) => {
-                onUpdateFile?.(updatedFile);
+                const nextFile = clone(updatedFile);
+                onUpdateFile?.({
+                    ...nextFile,
+                    contents: JSON.stringify(nextFile.contents, null, 4),
+                });
             }
         );
     };
@@ -277,7 +297,11 @@ export const FieldList: FC<FieldListProps> = ({
 
                 setEditingField(undefined);
 
-                return onUpdateFile?.(newFile);
+                const nextFile = clone(newFile);
+                return onUpdateFile?.({
+                    ...nextFile,
+                    contents: JSON.stringify(nextFile.contents, null, 4),
+                });
             })
             .catch((e) => console.log(e, 'e'));
     };

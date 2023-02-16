@@ -23,6 +23,7 @@ export interface FrameContextState {
 
     directory?: Directory;
     openDirectory: () => void;
+    closeDirectory: () => void;
 
     directoryLoading?: boolean;
     setDirectoryLoading?: (loading: boolean) => void;
@@ -40,6 +41,7 @@ export interface FrameContextState {
 const initialState: FrameContextState = {
     directory: undefined,
     openDirectory: noop,
+    closeDirectory: noop,
 
     directoryLoading: true,
     setDirectoryLoading: noop,
@@ -124,6 +126,12 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
     const openDirectory = useCallback(() => {
         setDirectoryLoading(true);
         window.electron.openDirectoryDialog();
+    }, []);
+
+    const closeDirectory = useCallback(() => {
+        setFile(undefined);
+        setUnsavedFile(undefined);
+        setDirectory(undefined);
     }, []);
 
     /*
@@ -252,6 +260,7 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
 
             directory,
             openDirectory,
+            closeDirectory,
 
             directoryLoading,
             setDirectoryLoading,
@@ -270,6 +279,7 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
 
             directory,
             openDirectory,
+            closeDirectory,
 
             directoryLoading,
             setDirectoryLoading,
