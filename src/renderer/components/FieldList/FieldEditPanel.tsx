@@ -1,9 +1,5 @@
-import { omit } from 'lodash/fp';
-import { FC, HTMLProps, useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { FC, HTMLProps } from 'react';
 import { Field } from '../FrameContext/FrameContext.types';
-import { Input } from '../Input';
-import { TextArea } from '../Textarea';
 import { TitleBar } from '../TitleBar';
 import { AlignmentForm } from './AlignmentForm';
 

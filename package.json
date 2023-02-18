@@ -1,6 +1,6 @@
 {
     "name": "hubtools-desktop",
-    "version": "0.1.49",
+    "version": "0.1.51",
     "title": "HubTools Desktop",
     "private": false,
     "description": "A desktop app to help with HubSpot development",
@@ -119,6 +119,7 @@
         "electron-log": "^4.4.8",
         "electron-store": "^8.1.0",
         "electron-updater": "^5.3.0",
+        "fast-glob": "^3.2.12",
         "fs": "0.0.1-security",
         "local-storage": "^2.0.0",
         "lodash": "^4.17.21",
@@ -133,6 +134,8 @@
         "react-terminal": "^1.3.0",
         "shortid": "^2.2.16",
         "update-electron-app": "^2.0.1",
+        "xterm": "^5.1.0",
+        "xterm-for-react": "^1.0.4",
         "yup": "^0.32.11"
     },
     "devDependencies": {
@@ -272,7 +275,8 @@
                 "owner": "hubtools-io",
                 "repo": "hubtools-desktop"
             }
-        ]
+        ],
+        "npmRebuild": false
     },
     "devEngines": {
         "node": ">=14.x",

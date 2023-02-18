@@ -1,5 +1,5 @@
 import { get as lsGet, set as lsSet } from 'local-storage';
-import { cloneElement, FC, HTMLProps, useEffect, useState } from 'react';
+import { FC, HTMLProps, useEffect, useState } from 'react';
 import PlusIcon from 'mdi-react/PlusIcon';
 import { clone, cloneDeep } from 'lodash';
 import ArrowExpandVerticalIcon from 'mdi-react/ArrowExpandVerticalIcon';
@@ -16,7 +16,7 @@ import {
 import { Item } from './Item';
 import { copyItem, moveItemDown, removeItem, updateItem } from './utils';
 import { moveItemUp } from './utils/move-item-up';
-import { fieldsChoices, typeIconLookup } from './TypeIcon';
+import { fieldsChoices } from './TypeIcon';
 import { NoChildren } from './NoChildren';
 import { Modal } from '../Modal';
 import { ModalItem } from '../ModalItem';
@@ -300,7 +300,7 @@ export const FieldList: FC<FieldListProps> = ({
                 const nextFile = clone(newFile);
                 return onUpdateFile?.({
                     ...nextFile,
-                    contents: JSON.stringify(nextFile.contents, null, 4),
+                    contents: nextFile.contents,
                 });
             })
             .catch((e) => console.log(e, 'e'));

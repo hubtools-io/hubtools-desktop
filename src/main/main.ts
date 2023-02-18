@@ -9,28 +9,21 @@ import {
 } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import glob from 'glob';
+import glob from 'fast-glob';
 import chokidar, { FSWatcher } from 'chokidar';
 import log from 'electron-log';
 import Store from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+import { getFileExtension, resolveHtmlPath } from './util';
 
+// GLOBAL VARIABLES
 const STORE = new Store();
-
 let MAIN_WINDOW: BrowserWindow | null = null;
 
+// There is an error with React DevTools in electron development mode.
+// This is placed here temporarily until fix is available.
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
-
-const getFileExtension = (filename: string) => {
-    const result = filename.substring(
-        filename.lastIndexOf('.') + 1,
-        filename.length
-    );
-
-    return result === filename ? null : result;
-};
 
 /*
  * MESSAGE MANAGER
@@ -99,6 +92,43 @@ let DIRECTORY_ACTIVE = null as string | null;
 let DIRECTORY_WATCHER = null as FSWatcher | null;
 let DIRECTORY_WATCHER_READY = false;
 
+const retreiveDirectory = (requestType: string) => {
+    const ignoreSubdirectories = [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/.git/**',
+    ];
+
+    const matches = glob.sync([`${DIRECTORY_ACTIVE}/**/*`], {
+        ignore: [...ignoreSubdirectories],
+        absolute: true,
+        onlyFiles: false,
+        markDirectories: false,
+        dot: false,
+    });
+
+    const matchingContents = [] as any;
+    matches.forEach((match) => {
+        matchingContents.push({
+            isDirectory: fs.lstatSync(match).isFile() === false,
+            path: match,
+        });
+    });
+
+    sendMessage('', false);
+
+    MAIN_WINDOW?.webContents.send('directory:response', {
+        data: {
+            requestType,
+            directory: {
+                name: path.basename(DIRECTORY_ACTIVE as string),
+                path: DIRECTORY_ACTIVE,
+                contents: matchingContents,
+            },
+        },
+    });
+};
+
 ipcMain.on('directory:open-dialog', (event: any) => {
     if (!MAIN_WINDOW) {
         return;
@@ -121,12 +151,6 @@ ipcMain.on('directory:open-dialog', (event: any) => {
             if (result.canceled || result.filePaths.length === 0) {
                 sendMessage('', false);
             } else {
-                const ignoreSubdirectories = [
-                    '**/node_modules/**',
-                    '**/dist/**',
-                    '**/.git/**',
-                ];
-
                 sendMessage('Directory opening...', false);
 
                 DIRECTORY_ACTIVE = result.filePaths[0];
@@ -141,109 +165,16 @@ ipcMain.on('directory:open-dialog', (event: any) => {
                     })
                     .on('ready', () => {
                         DIRECTORY_WATCHER_READY = true;
-                        glob(
-                            `${DIRECTORY_ACTIVE}/**/*`,
-                            {
-                                ignore: [...ignoreSubdirectories],
-                            },
-                            (error: any, matches: string[]) => {
-                                if (error) {
-                                    event.sender.send('directory:response', {
-                                        data: {
-                                            error: {
-                                                message: `${error}`,
-                                                code: 500,
-                                            },
-                                        },
-                                    });
-                                } else {
-                                    const matchingContents = [] as any;
-                                    matches.forEach((match) => {
-                                        matchingContents.push({
-                                            isDirectory:
-                                                fs.lstatSync(match).isFile() ===
-                                                false,
-                                            path: match,
-                                        });
-                                    });
-
-                                    event.sender.send('directory:response', {
-                                        data: {
-                                            directory: {
-                                                name: path.basename(
-                                                    DIRECTORY_ACTIVE as string
-                                                ),
-                                                path: DIRECTORY_ACTIVE,
-                                                contents: matchingContents,
-                                            },
-                                        },
-                                    });
-                                }
-                            }
-                        );
+                        retreiveDirectory('ready');
                     })
                     .on('change', (cpath: any) => {
-                        // TODO: Revisit
-                        // If directory is ready and a change has been made.
-                        // Trigger watch-directory event
-                        // if (DIRECTORY_WATCHER_READY) {
-                        //   event.sender.send('watch-directory', {
-                        //     directory: DIRECTORY_ACTIVE,
-                        //     file: cpath,
-                        //     eventType: 'change',
-                        //   });
-                        // }
+                        if (DIRECTORY_WATCHER_READY) {
+                            retreiveDirectory('change');
+                        }
                     })
                     .on('unlink', (cpath: any) => {
                         if (DIRECTORY_WATCHER_READY) {
-                            glob(
-                                `${DIRECTORY_ACTIVE}/**/*`,
-                                {
-                                    ignore: [...ignoreSubdirectories],
-                                },
-                                (error: any, matches: string[]) => {
-                                    if (error) {
-                                        event.sender.send(
-                                            'directory:response',
-                                            {
-                                                data: {
-                                                    error: {
-                                                        message: `${error}`,
-                                                        code: 500,
-                                                    },
-                                                },
-                                            }
-                                        );
-                                    } else {
-                                        const matchingContents = [] as any;
-                                        matches.forEach((match) => {
-                                            matchingContents.push({
-                                                isDirectory:
-                                                    fs
-                                                        .lstatSync(match)
-                                                        .isFile() === false,
-                                                path: match,
-                                            });
-                                        });
-
-                                        event.sender.send(
-                                            'directory:response',
-                                            {
-                                                data: {
-                                                    directory: {
-                                                        name: path.basename(
-                                                            DIRECTORY_ACTIVE as string
-                                                        ),
-                                                        path: DIRECTORY_ACTIVE,
-                                                        contents:
-                                                            matchingContents,
-                                                    },
-                                                },
-                                            }
-                                        );
-                                    }
-                                }
-                            );
+                            retreiveDirectory('unlink');
                         }
                     });
             }
@@ -336,14 +267,41 @@ ipcMain.on('file:save', (event: any, args: any) => {
     });
 });
 
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
+/*
+ * TERMAL MANAGER
+ * --------------------------------------------------------------------
+ * Termianl: Send
+ *   Terminal data from the frontend, sent to main.
+ *
+ * Termianl: Receive
+ *   Terminal response from main, sent to frontend.
+ */
 
-ipcMain.on('reload-directory', (event: any, args: any) => {
-    // getDirectoryContents(event, args.directory);
+const os = require('os');
+const pty = require('node-pty');
+
+const terminal = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
+const ptyProcess = pty.spawn(terminal, [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME,
 });
 
+ipcMain.on('terminal:send', (_event: any, data: any) => {
+    return ptyProcess.write(`${data}\n`);
+});
+
+ptyProcess.onData((data: any) => {
+    if (!data.startsWith('bash')) {
+        MAIN_WINDOW?.webContents.send('terminal:receive', data);
+    }
+});
+
+/*
+ * APP WINDOW SETUP
+ * --------------------------------------------------------------------
+ */
 if (process.env.NODE_ENV === 'production') {
     const sourceMapSupport = require('source-map-support');
     sourceMapSupport.install();
@@ -408,7 +366,6 @@ const createWindow = async () => {
     const menuBuilder = new MenuBuilder(MAIN_WINDOW);
     menuBuilder.buildMenu();
 
-    // Open urls in the user's browser
     MAIN_WINDOW.webContents.setWindowOpenHandler((edata) => {
         shell.openExternal(edata.url);
         return { action: 'deny' };

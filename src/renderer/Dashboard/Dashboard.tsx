@@ -65,6 +65,9 @@ export const Dashboard = () => {
         unsavedFrameFile,
         saveFrameFile,
         revertFrameFile,
+
+        terminal,
+        sendTerminal,
     } = useContext(FrameContext);
 
     const [currentView, setCurrentView] = useState<View>('CODE');
@@ -75,7 +78,6 @@ export const Dashboard = () => {
 
     useEffect(() => {
         setDirectoryLoading?.(false);
-        // setCurrentView('CODE');
     }, [directory, setDirectoryLoading]);
 
     useEffect(() => {
@@ -231,6 +233,10 @@ export const Dashboard = () => {
         });
     };
 
+    const handleSendTerminal = (data: any) => {
+        sendTerminal?.(data);
+    };
+
     useHotkeys(
         'meta+s, ctrl+s',
         () => {
@@ -243,7 +249,7 @@ export const Dashboard = () => {
 
     return (
         <Layout>
-            <Navbar title="HubTools" version={appVersion}>
+            <Navbar title="HubTools" version={appVersion} message={message}>
                 <Button onClick={() => handleOpenDirectory()}>
                     Open HubSpot Project
                 </Button>
@@ -281,18 +287,6 @@ export const Dashboard = () => {
                                     }
                                 />
                             </div>
-
-                            <span
-                                style={{
-                                    display: 'inline-block',
-                                    paddingLeft: 10,
-                                    color: 'rgba(255,255,255,0.7',
-                                    textTransform: 'none',
-                                    textAlign: 'right',
-                                }}
-                            >
-                                {message}
-                            </span>
                         </div>
                     ) : null}
                 </TitleBar>
@@ -393,7 +387,10 @@ export const Dashboard = () => {
                 </Explorer>
 
                 <Terminal>
-                    <TerminalWindow />
+                    <TerminalWindow
+                        terminal={terminal}
+                        onSendTerminal={handleSendTerminal}
+                    />
                 </Terminal>
             </Layout.Explorer>
 

@@ -1,8 +1,5 @@
 import { FC, ReactNode } from 'react';
-import {
-    Draggable,
-    DraggableProvidedDraggableProps,
-} from 'react-beautiful-dnd';
+import { Draggable } from 'react-beautiful-dnd';
 
 export type DragProps = any & {
     id: string;

@@ -16,7 +16,6 @@ import {
     HFileResponse,
     Message,
 } from './FrameContext.types';
-import { formatFieldString } from './utils';
 
 export interface FrameContextState {
     message?: any;
@@ -36,6 +35,9 @@ export interface FrameContextState {
     unsavedFrameFile?: HFile;
     saveFrameFile: (frameFile: HFile) => void;
     revertFrameFile: () => void;
+
+    terminal?: any;
+    sendTerminal?: (data: any) => void;
 }
 
 const initialState: FrameContextState = {
@@ -54,6 +56,9 @@ const initialState: FrameContextState = {
 
     unsavedFrameFile: undefined,
     saveFrameFile: noop,
+
+    terminal: undefined,
+    sendTerminal: noop,
 };
 
 export const FrameContext = createContext(initialState);
@@ -67,7 +72,7 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
 
     const [message, setMessage] = useState<string>('');
 
-    const [dirChanged, setDirChanged] = useState<any>();
+    const [terminal, setTerminal] = useState<Directory>();
 
     /*
      * MESSAGE MANAGER
@@ -108,12 +113,16 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
             if (response.data) {
                 const directoryData = { ...response.data.directory };
 
-                if (directoryData.path === directory?.path) {
-                    // TODO: We should first notify user
-                    // Ask if they want to save open files.
-                    setFile(undefined);
-                    setUnsavedFile(undefined);
-                    setDirectory({ ...directoryData });
+                if (response.data.requestType === 'ready') {
+                    if (directoryData.path !== directory?.path) {
+                        // TODO: We should first notify user
+                        // Ask if they want to save open files.
+                        setFile(undefined);
+                        setUnsavedFile(undefined);
+                        setDirectory({ ...directoryData });
+                    } else {
+                        setDirectory({ ...directoryData });
+                    }
                 } else {
                     setDirectory({ ...directoryData });
                 }
@@ -215,44 +224,19 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
         setUnsavedFile(file);
     }, [file]);
 
-    // useEffect(() => {
-    //   window.electron.watchDirectory((dataWatch: any) => {
-    //     if (dataWatch && dir) {
-    //       if (
-    //         file &&
-    //         dataWatch.eventType === 'change' &&
-    //         dataWatch.file === file?.path
-    //       ) {
-    //         // TELL USER TO RELOAD ACTIVE FILE FOR RENAME
-    //         setDirChanged({
-    //           directory: dataWatch.directory,
-    //           file: dataWatch.file,
-    //         });
-    //       }
+    /*
+     * TERMINAL MANAGER
+     * --------------------------------------------------------------------
+     */
+    useEffect(() => {
+        window.electron.terminalReceive((response: any) => {
+            setTerminal(response);
+        });
+    }, []);
 
-    //       if (dir && dataWatch.eventType === 'rename') {
-    //         // TELL USER TO RELOAD PANEL FOR RENAME
-
-    //         // eslint-disable-next-line no-console
-    //         console.log(dataWatch);
-    //         window.electron.reloadDirectory({ directory: `${dir?.path}` });
-    //       }
-    //     }
-    //   });
-    // }, [dir, file]);
-
-    // useEffect(() => {
-    //   // File has been updated externally
-    //   // Need to update if it is the active viewing file
-    //   if (dir && file && dirChanged) {
-    //     const changedFilePath = `${dir.path}/${dirChanged.file}`;
-
-    //     if (dirChanged.file === file?.path) {
-    //       openFrameFile({ ...file });
-    //       setDirChanged(false);
-    //     }
-    //   }
-    // }, [dirChanged, file, dir, openFrameFile]);
+    const sendTerminal = useCallback((data: any) => {
+        window.electron.terminalSend(data);
+    }, []);
 
     const ctx: FrameContextState = useMemo(
         () => ({
@@ -273,6 +257,9 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
             unsavedFrameFile: unsavedFile,
             saveFrameFile,
             revertFrameFile,
+
+            terminal,
+            sendTerminal,
         }),
         [
             message,
@@ -292,6 +279,9 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
             unsavedFile,
             saveFrameFile,
             revertFrameFile,
+
+            terminal,
+            sendTerminal,
         ]
     );
 

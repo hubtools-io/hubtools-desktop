@@ -6,17 +6,17 @@ import './App.css';
 import { FrameContextProvider } from './components/FrameContext';
 
 export default function App() {
-  return (
-    <Router>
-      <HotkeysProvider initiallyActiveScopes={['files']}>
-        <TerminalContextProvider>
-          <FrameContextProvider>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-            </Routes>
-          </FrameContextProvider>
-        </TerminalContextProvider>
-      </HotkeysProvider>
-    </Router>
-  );
+    return (
+        <Router>
+            <HotkeysProvider initiallyActiveScopes={['files']}>
+                <TerminalContextProvider>
+                    <FrameContextProvider>
+                        <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                        </Routes>
+                    </FrameContextProvider>
+                </TerminalContextProvider>
+            </HotkeysProvider>
+        </Router>
+    );
 }

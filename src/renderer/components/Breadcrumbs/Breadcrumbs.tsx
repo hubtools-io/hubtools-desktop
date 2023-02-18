@@ -1,5 +1,5 @@
 import ChevronRightIcon from 'mdi-react/ChevronRightIcon';
-import type { FC, HTMLProps } from 'react';
+import type { HTMLProps } from 'react';
 
 export type BreadcumbItem = {
     label: string;
@@ -10,10 +10,7 @@ export type BreadcrumbsProps = HTMLProps<HTMLDivElement> & {
     items: BreadcumbItem[];
 };
 
-export const Breadcrumbs: FC<BreadcrumbsProps> = ({
-    edited = false,
-    items,
-}) => (
+export const Breadcrumbs = ({ edited = false, items }: BreadcrumbsProps) => (
     <>
         {items.map((item: BreadcumbItem, index: number) => (
             <div

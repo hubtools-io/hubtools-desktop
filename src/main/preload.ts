@@ -1,18 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import {
     DirectoryResponse,
-    HFile,
     HFileResponse,
 } from '../renderer/components/FrameContext/FrameContext.types';
-
-type OpenFile = {
-    filePath: HFile['path'];
-};
-
-type SaveFile = {
-    filePath: HFile['path'];
-    contents: HFile['contents'];
-};
+import { OpenFile, SaveFile } from './util';
 
 const electronHandler = {
     /* Directory Manager ------------------------------------------------- */
@@ -41,15 +32,10 @@ const electronHandler = {
             callback(data);
         }),
 
-    // ----------------------
-    // ----------------------
-    // ----------------------
-    // ----------------------
-    // ----------------------
-    // ----------------------
-    reloadDirectory: (args: any) => ipcRenderer.send('reload-directory', args),
-    watchDirectory: (callback: any) =>
-        ipcRenderer.on('watch-directory', (event, data) => {
+    /* Terminal Manager -------------------------------------------------- */
+    terminalSend: (data: any) => ipcRenderer.send('terminal:send', data),
+    terminalReceive: (callback: any) =>
+        ipcRenderer.on('terminal:receive', (event, data) => {
             callback(data);
         }),
 };

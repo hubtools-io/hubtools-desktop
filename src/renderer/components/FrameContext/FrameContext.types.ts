@@ -395,6 +395,7 @@ export type Directory = {
 
 export type DirectoryResponse = {
     data: {
+        requestType?: string;
         error?: ErrorMessage;
         directory?: Directory;
     };

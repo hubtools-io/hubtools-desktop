@@ -1,13 +1,29 @@
-import type { FC, HTMLProps } from 'react';
+import { FC, HTMLProps, useEffect, useState } from 'react';
 import { ReactTerminal } from 'react-terminal';
 import { uiDimensions } from '../../utils';
 
-export type TerminalWindowProps = HTMLProps<HTMLDivElement>;
+export type TerminalWindowProps = HTMLProps<HTMLDivElement> & {
+    terminal?: any;
+    onSendTerminal?: (data: any) => void;
+};
 
-export const TerminalWindow: FC<TerminalWindowProps> = (props) => {
-    const commands = {
-        whoami: 'hubtools',
-    };
+export const TerminalWindow: FC<TerminalWindowProps> = ({
+    onSendTerminal,
+    terminal,
+    ...props
+}) => {
+    const commands = {};
+    const [command, setCommand] = useState<any>();
+
+    useEffect(() => {
+        setCommand(terminal);
+    }, [terminal]);
+
+    // TODO: Buffer Terminal
+    // When work is complete: defaultHandler={handleAllCommands}
+    // const handleAllCommands = (com: any, commandArguments: any) => {
+    //     onSendTerminal?.(`${com} ${commandArguments}`);
+    // };
 
     return (
         <div

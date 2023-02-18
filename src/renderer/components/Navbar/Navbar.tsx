@@ -3,12 +3,14 @@ import type { FC, HTMLProps } from 'react';
 export type NavbarProps = HTMLProps<HTMLDivElement> & {
     title: string;
     version?: string;
+    message?: string;
 };
 
 export const Navbar: FC<NavbarProps> = ({
     children,
     title,
     version,
+    message = '',
     ...props
 }) => (
     <div
@@ -49,6 +51,19 @@ export const Navbar: FC<NavbarProps> = ({
                 </span>
             ) : null}
         </div>
+
+        <span
+            style={{
+                display: 'inline-block',
+                paddingLeft: 10,
+                color: 'rgba(255,255,255,0.7',
+                textTransform: 'none',
+                textAlign: 'right',
+                fontSize: 12,
+            }}
+        >
+            {message}
+        </span>
 
         {children}
     </div>

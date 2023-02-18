@@ -1,6 +1,6 @@
 {
     "name": "hubtools",
-    "version": "0.1.49",
+    "version": "0.1.51",
     "description": "A desktop app to help with HubSpot development",
     "license": "MIT",
     "author": {
@@ -14,5 +14,7 @@
         "postinstall": "npm run rebuild && npm run link-modules",
         "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
     },
-    "dependencies": {}
+    "dependencies": {
+        "node-pty": "^0.10.1"
+    }
 }
