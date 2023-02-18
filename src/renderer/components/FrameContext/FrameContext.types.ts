@@ -26,12 +26,15 @@ export type InheritedField = {
 };
 
 export type VisibilityField = {
-    visibility?: {
-        controlling_field?: string;
-        controlling_value_regex?: string;
-        property?: string;
-        operator?: string;
-    } | null;
+    visibility?:
+        | {
+              controlling_field?: string;
+              controlling_value_regex?: string;
+              property?: string;
+              operator?: string;
+          }
+        | null
+        | string;
 };
 
 export type AdvancedVisibilityField = {

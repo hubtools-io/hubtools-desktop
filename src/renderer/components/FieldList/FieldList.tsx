@@ -173,7 +173,11 @@ export const FieldList: FC<FieldListProps> = ({
         });
     };
 
-    const handleUpdateField = (prevField: Field, nextField: Field) => {
+    const handleUpdateField = (
+        prevField: Field,
+        nextField: Field,
+        callback?: any
+    ) => {
         if (!workingFile) {
             return;
         }
@@ -189,6 +193,10 @@ export const FieldList: FC<FieldListProps> = ({
                     ...nextFile,
                     contents: JSON.stringify(nextFile.contents, null, 4),
                 });
+
+                if (callback) {
+                    callback(nextField);
+                }
             }
         );
     };
@@ -262,14 +270,7 @@ export const FieldList: FC<FieldListProps> = ({
 
     const handleFieldSubmit = (payload: any) => {
         handleUpdateField(editingField, payload);
-    };
-
-    const reorder = (list: any, startIndex: any, endIndex: any) => {
-        const result = Array.from(list);
-        const [removed] = result.splice(startIndex, 1);
-        result.splice(endIndex, 0, removed);
-
-        return result;
+        setEditingField(undefined);
     };
 
     const handleDragEnd = (result: any) => {
