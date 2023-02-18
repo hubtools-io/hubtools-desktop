@@ -8,6 +8,7 @@ import ContentSaveOutlineIcon from 'mdi-react/ContentSaveOutlineIcon';
 import FormatListBulletedSquareIcon from 'mdi-react/FormatListBulletedSquareIcon';
 import FormatIndentIncreaseIcon from 'mdi-react/FormatIndentIncreaseIcon';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { FrameFile } from 'renderer/components/FrameContext/FrameContext.types';
 import { FrameContext } from 'renderer/components/FrameContext';
 import { confirmAlert } from 'react-confirm-alert';
@@ -181,6 +182,12 @@ export const Dashboard = () => {
         setEditorEdited(false);
         setEditorValid(true);
         saveFrameFile(file);
+        toast(`${file.name} has been successfully saved.`, {
+            style: {
+                fontSize: 13,
+                fontWeight: 600,
+            },
+        });
     };
 
     const handleUpdateUnsavedFile = (file: FrameFile) => {
@@ -254,6 +261,8 @@ export const Dashboard = () => {
                     Open HubSpot Project
                 </Button>
             </Navbar>
+
+            <Toaster position="top-center" reverseOrder={false} />
 
             <Layout.FrameTitle>
                 <TitleBar>

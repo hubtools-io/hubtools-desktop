@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FC, HTMLProps, useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { Field } from '../FrameContext/FrameContext.types';
 import { Input } from '../Input';
 import { Select } from '../Select';
@@ -145,6 +146,12 @@ export const AlignmentForm: FC<AlignmentFormProps> = ({
                 : undefined;
 
             onSubmit?.(filterednextPayload);
+            toast(`${filterednextPayload.label} has been successfully saved.`, {
+                style: {
+                    fontSize: 13,
+                    fontWeight: 600,
+                },
+            });
         },
         [initialValues, onSubmit]
     );
