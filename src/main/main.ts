@@ -252,7 +252,7 @@ const watchDirectory = (initialLoad?: boolean) => {
                             }
                         );
                     }
-                }, 500);
+                }, 150);
 
                 // If we have stored File from last session,
                 // We should load file back to state on launch.
@@ -262,7 +262,7 @@ const watchDirectory = (initialLoad?: boolean) => {
                     if (FILE_ACTIVE) {
                         openFile(FILE_ACTIVE);
                     }
-                }, 1000);
+                }, 300);
             }
         })
         .on('change', (cpath: any) => {
