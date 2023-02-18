@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import {
+    DirectoryExpandResponse,
     DirectoryResponse,
     HFileResponse,
 } from '../renderer/components/FrameContext/FrameContext.types';
@@ -12,6 +13,15 @@ const electronHandler = {
         ipcRenderer.on('directory:response', (_event, data) => {
             callback(data);
         }),
+    closeDirectory: () => ipcRenderer.send('directory:close'),
+    expandDirectory: (expandArray: string[]) =>
+        ipcRenderer.send('directory:expand', expandArray),
+    expandDirectoryResponse: (
+        callback: (data: DirectoryExpandResponse) => void
+    ) =>
+        ipcRenderer.on('directory:expand-response', (_event, data) => {
+            callback(data);
+        }),
 
     /* File Manager ------------------------------------------------------ */
     openFile: (args: OpenFile) => ipcRenderer.send('file:open', args),
@@ -19,6 +29,7 @@ const electronHandler = {
         ipcRenderer.on('file:response', (event, data) => {
             callback(data);
         }),
+    closeFile: () => ipcRenderer.send('file:close'),
 
     saveFile: (args: SaveFile) => ipcRenderer.send('file:save', args),
     saveFileResponse: (callback: (data: HFileResponse) => void) =>

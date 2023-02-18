@@ -1,5 +1,6 @@
 import { FC, HTMLProps, useEffect, useState } from 'react';
 import FolderRemoveIcon from 'mdi-react/FolderRemoveIcon';
+import FormatVerticalAlignCenterIcon from 'mdi-react/FormatVerticalAlignCenterIcon';
 import {
     Directory,
     DirectoryTree,
@@ -12,8 +13,10 @@ import { ExplorerFile } from './ExplorerFile';
 export type ExplorerFilesProps = HTMLProps<HTMLDivElement> & {
     directory?: Directory;
     directoryLoading?: boolean;
+    expandedTree?: string[];
     onFileSelect: (file: any) => void;
     onCloseProject: () => void;
+    onExpandProject: (expandArray: string[]) => void;
     onOpenProject: () => void;
     selectedFile?: any;
     selectedFileEdited?: boolean;
@@ -23,7 +26,9 @@ export type ExplorerFilesProps = HTMLProps<HTMLDivElement> & {
 export const ExplorerFiles: FC<ExplorerFilesProps> = ({
     directory,
     directoryLoading,
+    expandedTree = [],
     onCloseProject,
+    onExpandProject,
     onOpenProject,
     onFileSelect,
     selectedFile,
@@ -32,7 +37,7 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
     ...props
 }) => {
     const [directoryTree, setDirectoryTree] = useState<any>();
-    const [expanded, setExpanded] = useState<Path[]>([]);
+    const [expanded, setExpanded] = useState<Path[]>(expandedTree);
 
     // On initial load, if there is a directory
     // Build out directory tree based on paths
@@ -46,15 +51,27 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
         }
     }, [directory]);
 
+    const handleCollapseDirectories = () => {
+        setExpanded([]);
+        onExpandProject([]);
+    };
+
+    useEffect(() => {
+        if (expandedTree.length > 0) {
+            setExpanded(expandedTree);
+        }
+    }, [expandedTree]);
+
     const handleSelectFile = (directoryItem: DirectoryTreeItem) => {
         if (directoryItem.isDirectory) {
-            setExpanded((prevValue: Path[]) => {
-                const isExpanded = prevValue.includes(directoryItem.path);
+            const isExpanded = expanded.includes(directoryItem.path);
 
-                return isExpanded
-                    ? prevValue.filter((v: any) => v !== directoryItem.path)
-                    : [...prevValue, directoryItem.path];
-            });
+            const nextExpand = isExpanded
+                ? expanded.filter((v: any) => v !== directoryItem.path)
+                : [...expanded, directoryItem.path];
+
+            setExpanded(nextExpand);
+            onExpandProject(nextExpand);
         } else {
             onFileSelect(directoryItem);
         }
@@ -125,13 +142,32 @@ export const ExplorerFiles: FC<ExplorerFilesProps> = ({
                     </div>
 
                     <div
-                        title="Exit Project"
-                        role="button"
-                        className="clickable"
-                        onClick={onCloseProject}
-                        onKeyDown={onCloseProject}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                        }}
                     >
-                        <FolderRemoveIcon size={18} />
+                        <div
+                            title="Collapse Directories"
+                            role="button"
+                            className="clickable"
+                            onClick={handleCollapseDirectories}
+                            onKeyDown={handleCollapseDirectories}
+                            style={{ marginRight: 10 }}
+                        >
+                            <FormatVerticalAlignCenterIcon size={14} />
+                        </div>
+
+                        <div
+                            title="Exit Project"
+                            role="button"
+                            className="clickable"
+                            onClick={onCloseProject}
+                            onKeyDown={onCloseProject}
+                        >
+                            <FolderRemoveIcon size={18} />
+                        </div>
                     </div>
                 </div>
             ) : null}

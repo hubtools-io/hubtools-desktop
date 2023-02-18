@@ -17,9 +17,18 @@ import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { getFileExtension, resolveHtmlPath } from './util';
 
+type DirectoryPath = string;
+
 // GLOBAL VARIABLES
 const STORE = new Store();
 let MAIN_WINDOW: BrowserWindow | null = null;
+
+let DIRECTORY_ACTIVE = null as string | null;
+let DIRECTORY_WATCHER = null as FSWatcher | null;
+let DIRECTORY_WATCHER_READY = false;
+let DIRECTORY_EXPAND = null as DirectoryPath[] | null;
+
+let FILE_ACTIVE = null as string | null;
 
 // There is an error with React DevTools in electron development mode.
 // This is placed here temporarily until fix is available.
@@ -80,6 +89,93 @@ class AppUpdater {
 }
 
 /*
+ * FILE MANAGER
+ * --------------------------------------------------------------------
+ * File: Open File
+ *   Opens a file from path sent from UI.
+ *
+ * File: Response
+ *   Sends a response once a file has been opened.
+ *
+ * File: Save
+ *   Saves content at specified path
+ *
+ * File: Save Response
+ *   Sends a response once a file has been saved.
+ */
+
+const openFile = (filePath: any) => {
+    sendMessage('Opening File...', false);
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            sendMessage('', false);
+            return MAIN_WINDOW?.webContents.send('file:response', {
+                data: {
+                    error: {
+                        message: `${err}`,
+                        code: 500,
+                    },
+                },
+            });
+        }
+
+        sendMessage('', true);
+
+        return MAIN_WINDOW?.webContents.send('file:response', {
+            data: {
+                file: {
+                    name: path.basename(filePath as string),
+                    path: filePath,
+                    contents: data,
+                    extension: getFileExtension(filePath),
+                },
+            },
+        });
+    });
+};
+
+ipcMain.on('file:open', (_event: any, args: any) => {
+    FILE_ACTIVE = args.filePath;
+
+    openFile(args.filePath);
+});
+
+ipcMain.on('file:save', (event: any, args: any) => {
+    sendMessage('Saving file...', false);
+
+    fs.writeFile(args.filePath, args.contents, (err) => {
+        sendMessage('', false);
+
+        if (err) {
+            return event.sender.send('file:save-response', {
+                data: {
+                    error: {
+                        message: `${err}`,
+                        code: 500,
+                    },
+                },
+            });
+        }
+
+        return event.sender.send('file:save-response', {
+            data: {
+                file: {
+                    name: path.basename(args.filePath as string),
+                    path: args.filePath,
+                    contents: args.contents,
+                    extension: getFileExtension(args.filePath),
+                },
+            },
+        });
+    });
+});
+
+ipcMain.on('file:close', (_event: any) => {
+    FILE_ACTIVE = null;
+});
+
+/*
  * DIRECTORY MANAGER
  * --------------------------------------------------------------------
  * Directory: Open Dialog
@@ -88,10 +184,6 @@ class AppUpdater {
  * Directory: Response
  *   Sends a response once a directory has been opened.
  */
-let DIRECTORY_ACTIVE = null as string | null;
-let DIRECTORY_WATCHER = null as FSWatcher | null;
-let DIRECTORY_WATCHER_READY = false;
-
 const retreiveDirectory = (requestType: string) => {
     const ignoreSubdirectories = [
         '**/node_modules/**',
@@ -129,6 +221,62 @@ const retreiveDirectory = (requestType: string) => {
     });
 };
 
+const watchDirectory = (initialLoad?: boolean) => {
+    sendMessage('Directory opening...', false);
+
+    if (!DIRECTORY_ACTIVE) {
+        return;
+    }
+
+    DIRECTORY_WATCHER = chokidar
+        .watch(DIRECTORY_ACTIVE, {
+            persistent: true,
+        })
+        .on('ready', () => {
+            DIRECTORY_WATCHER_READY = true;
+            retreiveDirectory('ready');
+
+            if (initialLoad) {
+                // If we have stored expanded directory tree
+                // We should load expanded state back on launch.
+                DIRECTORY_EXPAND = STORE.get('directory_expand') as any;
+
+                setTimeout(() => {
+                    if (DIRECTORY_EXPAND) {
+                        MAIN_WINDOW?.webContents.send(
+                            'directory:expand-response',
+                            {
+                                data: {
+                                    expandArray: DIRECTORY_EXPAND,
+                                },
+                            }
+                        );
+                    }
+                }, 500);
+
+                // If we have stored File from last session,
+                // We should load file back to state on launch.
+                FILE_ACTIVE = STORE.get('file') as any;
+
+                setTimeout(() => {
+                    if (FILE_ACTIVE) {
+                        openFile(FILE_ACTIVE);
+                    }
+                }, 1000);
+            }
+        })
+        .on('change', (cpath: any) => {
+            if (DIRECTORY_WATCHER_READY) {
+                retreiveDirectory('change');
+            }
+        })
+        .on('unlink', (cpath: any) => {
+            if (DIRECTORY_WATCHER_READY) {
+                retreiveDirectory('unlink');
+            }
+        });
+};
+
 ipcMain.on('directory:open-dialog', (event: any) => {
     if (!MAIN_WINDOW) {
         return;
@@ -151,32 +299,13 @@ ipcMain.on('directory:open-dialog', (event: any) => {
             if (result.canceled || result.filePaths.length === 0) {
                 sendMessage('', false);
             } else {
-                sendMessage('Directory opening...', false);
-
                 DIRECTORY_ACTIVE = result.filePaths[0];
 
                 if (!DIRECTORY_ACTIVE) {
                     return;
                 }
 
-                DIRECTORY_WATCHER = chokidar
-                    .watch(DIRECTORY_ACTIVE, {
-                        persistent: true,
-                    })
-                    .on('ready', () => {
-                        DIRECTORY_WATCHER_READY = true;
-                        retreiveDirectory('ready');
-                    })
-                    .on('change', (cpath: any) => {
-                        if (DIRECTORY_WATCHER_READY) {
-                            retreiveDirectory('change');
-                        }
-                    })
-                    .on('unlink', (cpath: any) => {
-                        if (DIRECTORY_WATCHER_READY) {
-                            retreiveDirectory('unlink');
-                        }
-                    });
+                watchDirectory();
             }
         })
         .catch((err) => {
@@ -192,79 +321,12 @@ ipcMain.on('directory:open-dialog', (event: any) => {
         });
 });
 
-/*
- * FILE MANAGER
- * --------------------------------------------------------------------
- * File: Open File
- *   Opens a file from path sent from UI.
- *
- * File: Response
- *   Sends a response once a file has been opened.
- *
- * File: Save
- *   Saves content at specified path
- *
- * File: Save Response
- *   Sends a response once a file has been saved.
- */
-ipcMain.on('file:open', (event: any, args: any) => {
-    sendMessage('Opening File...', false);
-
-    fs.readFile(args.filePath, 'utf8', (err, data) => {
-        if (err) {
-            sendMessage('', false);
-            return event.sender.send('file:response', {
-                data: {
-                    error: {
-                        message: `${err}`,
-                        code: 500,
-                    },
-                },
-            });
-        }
-
-        sendMessage('', true);
-        return event.sender.send('file:response', {
-            data: {
-                file: {
-                    name: path.basename(args.filePath as string),
-                    path: args.filePath,
-                    contents: data,
-                    extension: getFileExtension(args.filePath),
-                },
-            },
-        });
-    });
+ipcMain.on('directory:close', (_event: any) => {
+    DIRECTORY_ACTIVE = null;
 });
 
-ipcMain.on('file:save', (event: any, args: any) => {
-    sendMessage('Saving file...', false);
-
-    fs.writeFile(args.filePath, args.contents, (err) => {
-        sendMessage('', false);
-
-        if (err) {
-            return event.sender.send('file:save-response', {
-                data: {
-                    error: {
-                        message: `${err}`,
-                        code: 500,
-                    },
-                },
-            });
-        }
-
-        return event.sender.send('file:save-response', {
-            data: {
-                file: {
-                    name: path.basename(args.filePath as string),
-                    path: args.filePath,
-                    contents: args.contents,
-                    extension: getFileExtension(args.filePath),
-                },
-            },
-        });
-    });
+ipcMain.on('directory:expand', (event: any, expandArray: DirectoryPath[]) => {
+    DIRECTORY_EXPAND = [...expandArray];
 });
 
 /*
@@ -356,6 +418,9 @@ const createWindow = async () => {
     });
 
     MAIN_WINDOW.on('close', () => {
+        STORE.set('directory_expand', DIRECTORY_EXPAND);
+        STORE.set('directory', DIRECTORY_ACTIVE);
+        STORE.set('file', FILE_ACTIVE);
         STORE.set('bounds', MAIN_WINDOW?.getBounds());
     });
 
@@ -376,6 +441,14 @@ const createWindow = async () => {
     });
 
     new AppUpdater();
+
+    // If we have stored Directory from last session,
+    // We should load directory back to state on launch.
+    DIRECTORY_ACTIVE = STORE.get('directory') as any;
+
+    if (DIRECTORY_ACTIVE) {
+        watchDirectory(true);
+    }
 };
 
 app.on('window-all-closed', () => {

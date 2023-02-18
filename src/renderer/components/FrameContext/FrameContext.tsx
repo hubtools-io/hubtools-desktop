@@ -11,6 +11,7 @@ import {
 } from 'react';
 import {
     Directory,
+    DirectoryExpandResponse,
     DirectoryResponse,
     HFile,
     HFileResponse,
@@ -23,6 +24,8 @@ export interface FrameContextState {
     directory?: Directory;
     openDirectory: () => void;
     closeDirectory: () => void;
+    expandDirectory: (expandArray: string[]) => void;
+    expandedTree?: string[];
 
     directoryLoading?: boolean;
     setDirectoryLoading?: (loading: boolean) => void;
@@ -44,6 +47,8 @@ const initialState: FrameContextState = {
     directory: undefined,
     openDirectory: noop,
     closeDirectory: noop,
+    expandDirectory: noop,
+    expandedTree: [],
 
     directoryLoading: true,
     setDirectoryLoading: noop,
@@ -66,6 +71,7 @@ export const FrameContext = createContext(initialState);
 export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
     const [directory, setDirectory] = useState<Directory>();
     const [directoryLoading, setDirectoryLoading] = useState<boolean>(true);
+    const [expandedTree, setExpandedTree] = useState<string[]>();
 
     const [file, setFile] = useState<HFile>();
     const [unsavedFile, setUnsavedFile] = useState<HFile>();
@@ -132,15 +138,32 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
         });
     }, [directory]);
 
+    useEffect(() => {
+        window.electron.expandDirectoryResponse(
+            (response: DirectoryExpandResponse) => {
+                if (response.data) {
+                    setExpandedTree(response.data.expandArray);
+                }
+            }
+        );
+    }, []);
+
     const openDirectory = useCallback(() => {
         setDirectoryLoading(true);
         window.electron.openDirectoryDialog();
     }, []);
 
     const closeDirectory = useCallback(() => {
+        window.electron.closeDirectory();
+
         setFile(undefined);
         setUnsavedFile(undefined);
         setDirectory(undefined);
+    }, []);
+
+    const expandDirectory = useCallback((expandArray: string[]) => {
+        setExpandedTree(expandArray);
+        window.electron.expandDirectory(expandArray);
     }, []);
 
     /*
@@ -193,6 +216,8 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
     }, []);
 
     const removeFrameFile = useCallback(() => {
+        window.electron.closeFile();
+
         if (file || unsavedFile) {
             setFile(undefined);
             setUnsavedFile(undefined);
@@ -245,6 +270,8 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
             directory,
             openDirectory,
             closeDirectory,
+            expandDirectory,
+            expandedTree,
 
             directoryLoading,
             setDirectoryLoading,
@@ -267,6 +294,8 @@ export const FrameContextProvider: FC<{ children: ReactNode }> = (props) => {
             directory,
             openDirectory,
             closeDirectory,
+            expandDirectory,
+            expandedTree,
 
             directoryLoading,
             setDirectoryLoading,

@@ -404,6 +404,12 @@ export type DirectoryResponse = {
     };
 };
 
+export type DirectoryExpandResponse = {
+    data: {
+        expandArray?: string[];
+    };
+};
+
 export type DirectoryTreeItem = {
     path: Path;
     name: string;

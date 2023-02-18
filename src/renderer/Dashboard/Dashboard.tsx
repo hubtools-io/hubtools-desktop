@@ -54,6 +54,8 @@ export const Dashboard = () => {
         directory,
         openDirectory,
         closeDirectory,
+        expandDirectory,
+        expandedTree,
 
         directoryLoading,
         setDirectoryLoading,
@@ -240,6 +242,10 @@ export const Dashboard = () => {
         });
     };
 
+    const handleExpandDirectory = (expandArray: string[]) => {
+        expandDirectory(expandArray);
+    };
+
     const handleSendTerminal = (data: any) => {
         sendTerminal?.(data);
     };
@@ -386,7 +392,11 @@ export const Dashboard = () => {
                     <ExplorerFiles
                         directory={directory}
                         directoryLoading={directoryLoading}
+                        expandedTree={expandedTree}
                         onCloseProject={() => handleCloseDirectory()}
+                        onExpandProject={(expandArray: string[]) =>
+                            handleExpandDirectory(expandArray)
+                        }
                         onOpenProject={() => handleOpenDirectory()}
                         onFileSelect={handleOpenFile}
                         selectedFile={unsavedFrameFile}
