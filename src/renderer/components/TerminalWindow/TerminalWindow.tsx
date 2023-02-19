@@ -1,5 +1,5 @@
-import { FC, HTMLProps, useEffect, useState } from 'react';
-import { ReactTerminal } from 'react-terminal';
+import { FC, HTMLProps, useContext, useEffect, useState } from 'react';
+import { ReactTerminal, TerminalContext } from 'react-terminal';
 import { uiDimensions } from '../../utils';
 
 export type TerminalWindowProps = HTMLProps<HTMLDivElement> & {
@@ -12,6 +12,13 @@ export const TerminalWindow: FC<TerminalWindowProps> = ({
     terminal,
     ...props
 }) => {
+    const { setBufferedContent, setTemporaryContent } =
+        useContext(TerminalContext);
+    const [theme, setTheme] = useState('light');
+    const [controlBar, setControlBar] = useState(true);
+    const [controlButtons, setControlButtons] = useState(true);
+    const [prompt, setPrompt] = useState('>>>');
+
     const commands = {};
     const [command, setCommand] = useState<any>();
 
@@ -21,8 +28,33 @@ export const TerminalWindow: FC<TerminalWindowProps> = ({
 
     // TODO: Buffer Terminal
     // When work is complete: defaultHandler={handleAllCommands}
-    // const handleAllCommands = (com: any, commandArguments: any) => {
-    //     onSendTerminal?.(`${com} ${commandArguments}`);
+    // const handleAllCommands = async (com: any, commandArguments: any) => {
+    //     const response = null as any;
+    //     await new Promise((resolve) => {
+    //         onSendTerminal?.(`${com} ${commandArguments}`);
+
+    //         window.electron.terminalReceive((reply: any) => {
+    //             setBufferedContent((previous) => (
+    //                 <>
+    //                     {previous}
+    //                     {reply.split('\t').map((e: any) => (
+    //                         <p
+    //                             style={{
+    //                                 fontSize: 13,
+    //                                 margin: 0,
+    //                                 display: 'block',
+    //                                 width: '100%',
+    //                             }}
+    //                         >
+    //                             {e}
+    //                         </p>
+    //                     ))}
+    //                     <br />
+    //                 </>
+    //             ));
+    //             resolve(undefined);
+    //         });
+    //     });
     // };
 
     return (

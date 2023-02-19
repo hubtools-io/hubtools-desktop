@@ -8,15 +8,15 @@ import { FrameContextProvider } from './components/FrameContext';
 export default function App() {
     return (
         <Router>
-            <HotkeysProvider initiallyActiveScopes={['files']}>
-                <TerminalContextProvider>
+            <TerminalContextProvider>
+                <HotkeysProvider initiallyActiveScopes={['files']}>
                     <FrameContextProvider>
                         <Routes>
                             <Route path="/" element={<Dashboard />} />
                         </Routes>
                     </FrameContextProvider>
-                </TerminalContextProvider>
-            </HotkeysProvider>
+                </HotkeysProvider>
+            </TerminalContextProvider>
         </Router>
     );
 }

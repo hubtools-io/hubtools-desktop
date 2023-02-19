@@ -30,6 +30,18 @@ let DIRECTORY_EXPAND = null as DirectoryPath[] | null;
 
 let FILE_ACTIVE = null as string | null;
 
+const os = require('os');
+const pty = require('node-pty');
+
+const terminal = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
+const ptyProcess = pty.spawn(terminal, [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME,
+    env: process.env.TZ,
+});
+
 // There is an error with React DevTools in electron development mode.
 // This is placed here temporarily until fix is available.
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -222,6 +234,10 @@ const retreiveDirectory = (requestType: string) => {
 };
 
 const watchDirectory = (initialLoad?: boolean) => {
+    if (ptyProcess && DIRECTORY_ACTIVE) {
+        ptyProcess.write(`cd ${DIRECTORY_ACTIVE} \n`);
+    }
+
     sendMessage('Directory opening...', false);
 
     if (!DIRECTORY_ACTIVE) {
@@ -241,28 +257,21 @@ const watchDirectory = (initialLoad?: boolean) => {
                 // We should load expanded state back on launch.
                 DIRECTORY_EXPAND = STORE.get('directory_expand') as any;
 
-                setTimeout(() => {
-                    if (DIRECTORY_EXPAND) {
-                        MAIN_WINDOW?.webContents.send(
-                            'directory:expand-response',
-                            {
-                                data: {
-                                    expandArray: DIRECTORY_EXPAND,
-                                },
-                            }
-                        );
-                    }
-                }, 150);
+                if (DIRECTORY_EXPAND) {
+                    MAIN_WINDOW?.webContents.send('directory:expand-response', {
+                        data: {
+                            expandArray: DIRECTORY_EXPAND,
+                        },
+                    });
+                }
 
                 // If we have stored File from last session,
                 // We should load file back to state on launch.
                 FILE_ACTIVE = STORE.get('file') as any;
 
-                setTimeout(() => {
-                    if (FILE_ACTIVE) {
-                        openFile(FILE_ACTIVE);
-                    }
-                }, 300);
+                if (FILE_ACTIVE) {
+                    openFile(FILE_ACTIVE);
+                }
             }
         })
         .on('change', (cpath: any) => {
@@ -338,26 +347,16 @@ ipcMain.on('directory:expand', (event: any, expandArray: DirectoryPath[]) => {
  * Termianl: Receive
  *   Terminal response from main, sent to frontend.
  */
-
-const os = require('os');
-const pty = require('node-pty');
-
-const terminal = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-const ptyProcess = pty.spawn(terminal, [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-});
-
 ipcMain.on('terminal:send', (_event: any, data: any) => {
-    return ptyProcess.write(`${data}\n`);
+    return ptyProcess.write(`${data.toString()}\n`);
 });
 
 ptyProcess.onData((data: any) => {
+    console.log(data);
     if (!data.startsWith('bash')) {
         MAIN_WINDOW?.webContents.send('terminal:receive', data);
     }
+    // MAIN_WINDOW?.webContents.send('terminal:receive', data.toString());
 });
 
 /*
